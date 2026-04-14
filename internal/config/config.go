@@ -18,6 +18,10 @@ type Config struct {
 	PBAdmin  string
 	PBPass   string
 
+	// Admin credentials
+	AdminEmail    string
+	AdminPassword string
+
 	// JWT
 	JWTSecret     string
 	JWTExpiration time.Duration
@@ -56,6 +60,10 @@ func Load() *Config {
 		PBUrl:   getEnv("PB_URL", "http://127.0.0.1:8090"),
 		PBAdmin: getEnv("PB_ADMIN_EMAIL", "admin@jcp.cl"),
 		PBPass:  getEnv("PB_ADMIN_PASSWORD", ""),
+
+		// Admin credentials
+		AdminEmail:    getEnv("ADMIN_EMAIL", "admin@jcp-gestioninmobiliaria.cl"),
+		AdminPassword: getEnv("ADMIN_PASSWORD", "jcp2026admin!"),
 
 		// JWT
 		JWTSecret:     getEnv("JWT_SECRET", "jcp-secret-change-me-in-production"),
