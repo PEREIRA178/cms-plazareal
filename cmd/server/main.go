@@ -70,18 +70,9 @@ func main() {
 	realtime.SetHubInstance(hub)
 
 	// ── PUBLIC WEB ──
-	app.Get("/", web.IndexHandler(cfg))
-	app.Get("/index", func(c *fiber.Ctx) error { return c.Redirect("/", fiber.StatusMovedPermanently) })
-	app.Get("/index.html", func(c *fiber.Ctx) error { return c.Redirect("/", fiber.StatusMovedPermanently) })
-	app.Get("/nuestro-colegio.html", web.PageHandler(cfg, "nuestro-colegio"))
-	app.Get("/admision.html", web.PageHandler(cfg, "admision"))
-	app.Get("/comunicados.html", web.PageHandler(cfg, "comunicados"))
-	app.Get("/edex.html", web.PageHandler(cfg, "edex"))
-	app.Get("/cepad.html", web.PageHandler(cfg, "cepad"))
-	app.Get("/inclusion.html", web.PageHandler(cfg, "inclusion"))
-	app.Get("/ceal.html", web.PageHandler(cfg, "ceal"))
-	app.Get("/noticias.html", web.PageHandler(cfg, "noticias"))
+	app.Get("/", web.PageHandler(cfg, "propiedades"))
 	app.Get("/propiedades.html", web.PageHandler(cfg, "propiedades"))
+	app.Get("/noticias.html", web.PageHandler(cfg, "noticias"))
 
 	// ── HTMX FRAGMENTS ──
 	frag := app.Group("/fragments")
@@ -177,6 +168,15 @@ func main() {
 
 	adm.Get("/whatsapp-logs", admin.WhatsAppLogs(cfg))
 
+	// Propiedades
+	adm.Get("/propiedades", admin.PropiedadesList(cfg, pb))
+	adm.Get("/propiedades/new", admin.PropiedadForm(cfg))
+	adm.Post("/propiedades", admin.PropiedadCreate(cfg, pb))
+	adm.Get("/propiedades/:id/edit", admin.PropiedadEdit(cfg, pb))
+	adm.Put("/propiedades/:id", admin.PropiedadUpdate(cfg, pb))
+	adm.Delete("/propiedades/:id", admin.PropiedadDelete(cfg, pb))
+	adm.Post("/propiedades/:id/publish", admin.PropiedadToggleStatus(cfg, pb))
+
 	app.Post("/webhook/whatsapp", web.WhatsAppWebhook(cfg))
 
 	port := cfg.Port
@@ -187,7 +187,7 @@ func main() {
 		port = envPort
 	}
 
-	log.Printf("🏫 CSL System en http://localhost:%s", port)
+	log.Printf("🏢 JCP Gestión Inmobiliaria en http://localhost:%s", port)
 	log.Printf("📊 Dashboard: http://localhost:%s/admin", port)
 	log.Printf("🔧 PocketBase Admin: http://localhost:8090/_/")
 

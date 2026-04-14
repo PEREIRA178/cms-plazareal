@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dashboard — CSL Admin</title>
+<title>Dashboard — JCP Gestión Inmobiliaria</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet"/>
 <script src="https://unpkg.com/htmx.org@1.9.12"></script>
@@ -157,12 +157,10 @@ textarea.form-input{resize:vertical;min-height:80px}
 <!-- ══════ SIDEBAR ══════ -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
-    <div class="sidebar-brand-icon" style="overflow:hidden;padding:2px;background:transparent;box-shadow:none">
-      <img src="/static/logo.webp" alt="Colegio San Lorenzo" style="width:36px;height:36px;object-fit:contain;border-radius:8px"/>
-    </div>
+    <div class="sidebar-brand-icon">JCP</div>
     <div class="sidebar-brand-text">
-      <div class="sidebar-brand-name">San Lorenzo</div>
-      <div class="sidebar-brand-sub">Admin</div>
+      <div class="sidebar-brand-name">JCP Gestión</div>
+      <div class="sidebar-brand-sub">Inmobiliaria · Admin</div>
     </div>
   </div>
 
@@ -171,35 +169,12 @@ textarea.form-input{resize:vertical;min-height:80px}
     <a href="/admin/dashboard" class="sidebar-link active">
       <span class="material-symbols-outlined">dashboard</span> Dashboard
     </a>
-    <a href="/admin/events" class="sidebar-link" hx-get="/admin/events" hx-target="#main-content" hx-push-url="true">
-      <span class="material-symbols-outlined">event</span> Eventos
-    </a>
-    <a href="/admin/news" class="sidebar-link" hx-get="/admin/news" hx-target="#main-content" hx-push-url="true">
-      <span class="material-symbols-outlined">newspaper</span> Noticias
-    </a>
   </div>
 
   <div class="sidebar-section">
-    <div class="sidebar-section-title">Contenido</div>
-    <a href="/admin/multimedia" class="sidebar-link" hx-get="/admin/multimedia" hx-target="#main-content" hx-push-url="true">
-      <span class="material-symbols-outlined">perm_media</span> Multimedia
-    </a>
-    <a href="/admin/playlists" class="sidebar-link" hx-get="/admin/playlists" hx-target="#main-content" hx-push-url="true">
-      <span class="material-symbols-outlined">playlist_play</span> Playlists
-    </a>
-  </div>
-
-  <div class="sidebar-section">
-    <div class="sidebar-section-title">Dispositivos</div>
-    <a href="/admin/devices" class="sidebar-link" hx-get="/admin/devices" hx-target="#main-content" hx-push-url="true">
-      <span class="material-symbols-outlined">devices</span> Pantallas y Totems
-    </a>
-  </div>
-
-  <div class="sidebar-section">
-    <div class="sidebar-section-title">Comunicación</div>
-    <a href="/admin/whatsapp-logs" class="sidebar-link" hx-get="/admin/whatsapp-logs" hx-target="#main-content" hx-push-url="true">
-      <span class="material-symbols-outlined">chat</span> WhatsApp Logs
+    <div class="sidebar-section-title">Inmobiliaria</div>
+    <a href="/admin/propiedades" class="sidebar-link" hx-get="/admin/propiedades" hx-target="#main-content" hx-push-url="true">
+      <span class="material-symbols-outlined">home_work</span> Propiedades
     </a>
   </div>
 
@@ -340,8 +315,7 @@ document.querySelectorAll('.sidebar-link').forEach(link => {
 // Auto-load section on direct navigation (F5 / bookmark / deep link)
 (function(){
   var path = window.location.pathname;
-  var sections = ['/admin/events','/admin/news','/admin/multimedia',
-                  '/admin/playlists','/admin/devices','/admin/whatsapp-logs','/admin/users'];
+  var sections = ['/admin/propiedades','/admin/users'];
   if(sections.indexOf(path) !== -1){
     htmx.ajax('GET', path, {target:'#main-content', swap:'innerHTML'});
     document.querySelectorAll('.sidebar-link').forEach(function(l){
