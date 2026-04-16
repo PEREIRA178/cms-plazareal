@@ -228,6 +228,62 @@ func TiendasPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	}
 }
 
+// renderIndexCard renders an s-card for the home page featured section.
+func renderIndexCard(t tienda, i int) string {
+	logoSrc := t.Logo
+	if logoSrc == "" {
+		logoSrc = fmt.Sprintf("https://picsum.photos/seed/%s/320/160", t.Slug)
+	}
+	galBadge := "🟦 Norte"
+	if t.Gal == "sur" {
+		galBadge = "🟧 Sur"
+	}
+	featured := ""
+	if t.Destacada {
+		featured = `<span class="s-badge">⭐ Destacado</span>`
+	}
+	tag := catLabel(t.Cat)
+	return fmt.Sprintf(`<a href="tienda-individual.html?tienda=%s" class="s-card reveal">
+  <div class="s-card-top">
+    <img src="%s" alt="Logo %s" loading="lazy" onerror="this.src='https://picsum.photos/seed/%s/320/160'">
+    <span class="s-gallery">%s</span>%s
+  </div>
+  <div class="s-card-body">
+    <div class="s-card-name">%s</div>
+    <div class="s-card-cat">%s</div>
+    <div class="s-card-foot"><span class="s-card-tag">%s</span><span class="s-card-arr">→</span></div>
+  </div>
+</a>`,
+		template.HTMLEscapeString(t.Slug),
+		template.HTMLEscapeString(logoSrc),
+		template.HTMLEscapeString(t.Nombre),
+		template.HTMLEscapeString(t.Slug),
+		galBadge, featured,
+		template.HTMLEscapeString(t.Nombre),
+		template.HTMLEscapeString(t.Desc),
+		tag,
+	)
+}
+
+// TiendasDestacadas serves up to 6 featured store cards for the home page.
+func TiendasDestacadas(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		stores := fetchTiendas(pb, "status = 'publicado' && destacada = true", "-created", 6, 0)
+		if len(stores) == 0 {
+			stores = fetchTiendas(pb, "status = 'publicado'", "-created", 6, 0)
+		}
+		var sb strings.Builder
+		for i, t := range stores {
+			sb.WriteString(renderIndexCard(t, i))
+		}
+		if sb.Len() == 0 {
+			sb.WriteString(`<p style="grid-column:1/-1;text-align:center;color:#6B6B6B">No hay tiendas destacadas aún.</p>`)
+		}
+		c.Set("Content-Type", "text/html; charset=utf-8")
+		return c.SendString(sb.String())
+	}
+}
+
 // TiendaDetail returns the full store content for tienda-individual.html via HTMX.
 func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
