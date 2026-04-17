@@ -429,12 +429,13 @@ func EventEdit(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			dateStr = dt.Time().Format("2006-01-02T15:04")
 		}
 		var html string
-		if r.GetString("category") == "NOTICIA" {
+		cat := r.GetString("category")
+		if cat == "NOTICIA" || cat == "AVISO" || cat == "PUBLICIDAD" {
 			html = newsFormHTML(r.Id, r.GetString("title"), r.GetString("description"),
-				r.GetString("status"), dateStr, r.GetString("image_url"), r.GetString("body"))
+				r.GetString("status"), dateStr, r.GetString("image_url"), r.GetString("body"), cat)
 		} else {
 			html = eventFormHTML(r.Id, r.GetString("title"), r.GetString("description"),
-				r.GetString("category"), r.GetString("status"), dateStr,
+				cat, r.GetString("status"), dateStr,
 				r.GetString("pdf_url"))
 		}
 		c.Set("Content-Type", "text/html; charset=utf-8")
@@ -579,11 +580,27 @@ func eventFormHTML(id, title, description, category, status, date, pdfUrl string
 	)
 }
 
-// newsFormHTML builds the create/edit modal form for noticias (category=NOTICIA only)
-func newsFormHTML(id, title, description, status, date, imageUrl, body string) string {
+// newsFormHTML builds the create/edit modal form for comunicados (NOTICIA / AVISO / PUBLICIDAD)
+func newsFormHTML(id, title, description, status, date, imageUrl, body, category string) string {
 	method := `hx-post="/admin/news"`
 	if id != "" {
 		method = fmt.Sprintf(`hx-put="/admin/news/%s"`, id)
+	}
+	if category == "" {
+		category = "NOTICIA"
+	}
+	cats := []struct{ Val, Label string }{
+		{"NOTICIA", "📰 Noticia"},
+		{"AVISO", "📢 Aviso"},
+		{"PUBLICIDAD", "⭐ Publicidad"},
+	}
+	var catOpts strings.Builder
+	for _, cat := range cats {
+		selected := ""
+		if cat.Val == category {
+			selected = " selected"
+		}
+		catOpts.WriteString(fmt.Sprintf(`<option value="%s"%s>%s</option>`, cat.Val, selected, cat.Label))
 	}
 	return fmt.Sprintf(`<div class="modal-overlay" onclick="this.remove()">
   <div class="modal-card" onclick="event.stopPropagation()">
@@ -592,10 +609,9 @@ func newsFormHTML(id, title, description, status, date, imageUrl, body string) s
       <button onclick="document.getElementById('modal-container').innerHTML=''" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--md-outline)">✕</button>
     </div>
     <form %s hx-target="#toast-area" hx-swap="innerHTML">
-      <input type="hidden" name="category" value="NOTICIA"/>
       <div class="form-field">
         <label>Título <small id="nw-title-cnt" style="float:right;font-size:11px;color:var(--md-outline)">0/120</small></label>
-        <input type="text" name="title" value="%s" required class="form-input" maxlength="120" placeholder="Título de la noticia"
+        <input type="text" name="title" value="%s" required class="form-input" maxlength="120" placeholder="Título del comunicado"
           oninput="(function(el){var c=document.getElementById('nw-title-cnt');if(c){c.textContent=el.value.length+'/120';c.style.color=el.value.length>100?'#B71C1C':''}})(this)"/>
       </div>
       <div class="form-field">
@@ -606,14 +622,15 @@ func newsFormHTML(id, title, description, status, date, imageUrl, body string) s
       <div class="form-field"><label>Contenido completo</label><textarea name="body" class="form-input" rows="6" placeholder="Escribe el artículo completo aquí...">%s</textarea></div>
       <div class="form-field"><label>URL Foto principal</label><input type="url" name="image_url" value="%s" class="form-input" placeholder="https://... enlace a la imagen"/></div>
       <div class="form-row">
+        <div class="form-field"><label>Categoría</label><select name="category" class="form-input">%s</select></div>
         <div class="form-field"><label>Fecha</label><input type="datetime-local" name="date" value="%s" class="form-input"/></div>
-        <div class="form-field"><label>Estado</label>
-          <select name="status" class="form-input">
-            <option value="borrador"%s>Borrador</option>
-            <option value="publicado"%s>Publicado</option>
-            <option value="archivado"%s>Archivado</option>
-          </select>
-        </div>
+      </div>
+      <div class="form-field"><label>Estado</label>
+        <select name="status" class="form-input">
+          <option value="borrador"%s>Borrador</option>
+          <option value="publicado"%s>Publicado</option>
+          <option value="archivado"%s>Archivado</option>
+        </select>
       </div>
       <div class="modal-actions">
         <button type="button" onclick="document.getElementById('modal-container').innerHTML=''" class="topbar-btn topbar-btn-outline">Cancelar</button>
@@ -622,12 +639,13 @@ func newsFormHTML(id, title, description, status, date, imageUrl, body string) s
     </form>
   </div>
 </div>`,
-		map[bool]string{true: "Editar Noticia", false: "Nueva Noticia"}[id != ""],
+		map[bool]string{true: "Editar Comunicado", false: "Nuevo Comunicado"}[id != ""],
 		method,
 		template.HTMLEscapeString(title),
 		template.HTMLEscapeString(description),
 		template.HTMLEscapeString(body),
 		template.HTMLEscapeString(imageUrl),
+		catOpts.String(),
 		date,
 		sel(status, "borrador"),
 		sel(status, "publicado"),
@@ -643,11 +661,11 @@ func NewsList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			return c.SendFile("./internal/templates/admin/pages/news.html")
 		}
 		records, err := pb.FindRecordsByFilter("content_blocks",
-			"category = 'NOTICIA'", "-date", 50, 0)
+			"category = 'NOTICIA' || category = 'AVISO' || category = 'PUBLICIDAD'", "-date", 100, 0)
 
 		var sb strings.Builder
 		if err != nil || len(records) == 0 {
-			sb.WriteString(`<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--md-outline)">Sin noticias</td></tr>`)
+			sb.WriteString(`<tr><td colspan="5" style="text-align:center;padding:32px;color:var(--md-outline)">Sin comunicados</td></tr>`)
 		} else {
 			for _, r := range records {
 				status := r.GetString("status")
@@ -655,17 +673,28 @@ func NewsList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 				if status == "publicado" {
 					badgeClass = "badge-success"
 				}
-				feat := ""
-				if r.GetBool("featured") {
-					feat = `<span class="badge badge-info">⭐</span>`
+				cat := r.GetString("category")
+				catBadge := "badge-info"
+				catLabel := cat
+				switch cat {
+				case "NOTICIA":
+					catLabel = "📰 Noticia"
+				case "AVISO":
+					catLabel = "📢 Aviso"
+					catBadge = "badge-warning"
+				case "PUBLICIDAD":
+					catLabel = "⭐ Publicidad"
+					catBadge = "badge-success"
 				}
 				dateStr := "—"
 				if dt := r.GetDateTime("date"); !dt.IsZero() {
 					dateStr = dt.Time().Format("2 Jan 2006")
 				}
 				sb.WriteString(fmt.Sprintf(`<tr>
-          <td>%s</td><td>%s</td>
-          <td><span class="badge %s">%s</span></td><td>%s</td>
+          <td>%s</td>
+          <td><span class="badge %s">%s</span></td>
+          <td>%s</td>
+          <td><span class="badge %s">%s</span></td>
           <td>
             <button class="topbar-btn topbar-btn-outline" style="padding:4px 10px;font-size:12px"
               hx-get="/admin/events/%s/edit" hx-target="#modal-container" hx-swap="innerHTML">Editar</button>
@@ -673,9 +702,10 @@ func NewsList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
               hx-delete="/admin/events/%s" hx-confirm="¿Eliminar?" hx-target="closest tr" hx-swap="outerHTML swap:300ms">Eliminar</button>
           </td></tr>`,
 					template.HTMLEscapeString(r.GetString("title")),
-					dateStr, badgeClass,
-					template.HTMLEscapeString(status),
-					feat, r.Id, r.Id,
+					catBadge, catLabel,
+					dateStr,
+					badgeClass, template.HTMLEscapeString(status),
+					r.Id, r.Id,
 				))
 			}
 		}
@@ -686,7 +716,7 @@ func NewsList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 
 func NewsForm(cfg *config.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		html := newsFormHTML("", "", "", "borrador", "", "", "")
+		html := newsFormHTML("", "", "", "borrador", "", "", "", "NOTICIA")
 		c.Set("Content-Type", "text/html; charset=utf-8")
 		return c.SendString(html)
 	}
