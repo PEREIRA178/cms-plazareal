@@ -1,4 +1,5 @@
 <style>
+@keyframes spin{to{transform:rotate(360deg)}}
 .t-filter-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .t-filter-bar input,.t-filter-bar select{
   padding:8px 12px;border:1.5px solid var(--md-outline-variant);border-radius:var(--r-md);
@@ -90,5 +91,13 @@ function filterTiendaRows() {
   var cnt = document.getElementById('t-count');
   if (cnt) cnt.textContent = visible > 0 ? (visible + ' tienda' + (visible !== 1 ? 's' : '')) : '';
 }
-document.getElementById('tiendas-tbody').addEventListener('htmx:afterSwap', filterTiendaRows);
+var _tbody = document.getElementById('tiendas-tbody');
+if (_tbody) {
+  _tbody.addEventListener('htmx:afterSwap', filterTiendaRows);
+  // Explicit load in case hx-trigger="load" doesn't fire after HTMX content swap
+  if (!_tbody.dataset.loaded) {
+    _tbody.dataset.loaded = '1';
+    htmx.ajax('GET', '/admin/tiendas?fragment=rows', {target: '#tiendas-tbody', swap: 'innerHTML'});
+  }
+}
 </script>

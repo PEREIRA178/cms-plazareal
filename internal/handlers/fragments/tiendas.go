@@ -131,7 +131,7 @@ func renderTiendaCard(t tienda, i int) string {
 	}
 	featured := ""
 	if t.Destacada {
-		featured = `<span class="c-badge">⭐ Destacado</span>`
+		featured = `<span class="c-badge"><span class="material-symbols-outlined">grade</span>Destacado</span>`
 	}
 	tagsStr := ""
 	if len(t.Tags) > 0 {
@@ -241,7 +241,7 @@ func renderIndexCard(t tienda, i int) string {
 	}
 	featured := ""
 	if t.Destacada {
-		featured = `<span class="s-badge">⭐ Destacado</span>`
+		featured = `<span class="s-badge"><span class="material-symbols-outlined">grade</span>Destacado</span>`
 	}
 	tag := catLabel(t.Cat)
 	return fmt.Sprintf(`<a href="tienda-individual.html?tienda=%s" class="s-card">
@@ -414,7 +414,7 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			logoSrc = fmt.Sprintf("https://picsum.photos/seed/%s/148/148", t.Slug)
 		}
 
-		aboutTitle := fmt.Sprintf("🌟 Sobre %s", t.Nombre)
+		aboutTitle := fmt.Sprintf(`<span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">auto_awesome</span>Sobre %s`, t.Nombre)
 
 		html := fmt.Sprintf(`
 <div class="bc">
@@ -440,7 +440,7 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 <div class="main">
   <div>
     <div class="card fi" style="padding:20px">
-      <h2>📸 Galería</h2>
+      <h2><span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">photo_library</span>Galería</h2>
       <div class="gal-grid" data-photos="%s">
         <div class="gal-item" onclick="lbOpen(JSON.parse(this.parentNode.dataset.photos),0)"><img src="%s" alt="Foto 1"><div class="gal-over"></div></div>
         <div class="gal-item" onclick="lbOpen(JSON.parse(this.parentNode.dataset.photos),1)"><img src="%s" alt="Foto 2"><div class="gal-over"></div></div>
@@ -454,17 +454,17 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
       %s
     </div>
     <div class="card fi">
-      <h2>🕐 Horarios</h2>
+      <h2><span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">schedule</span>Horarios</h2>
       <div>%s</div>
     </div>
     <div class="card fi" style="padding:20px">
-      <h2>📍 Ubicación en Plaza Real</h2>
+      <h2><span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">location_on</span>Ubicación en Plaza Real</h2>
       <div class="map-mini">
         <iframe src="https://www.google.com/maps?q=Plaza+Real+Copiap%%C3%%B3&output=embed" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Ubicación"></iframe>
       </div>
       <div style="margin-top:13px;display:flex;align-items:center;gap:9px;flex-wrap:wrap">
-        <span style="background:var(--surface2);border-radius:9px;padding:7px 13px;font-size:.83rem;font-weight:600">📍 %s</span>
-        <span style="background:var(--surface2);border-radius:9px;padding:7px 13px;font-size:.83rem;font-weight:600;color:var(--muted)">🏙️ Centro de Copiapó</span>
+        <span style="background:var(--surface2);border-radius:9px;padding:7px 13px;font-size:.83rem;font-weight:600;display:inline-flex;align-items:center;gap:5px"><span class="material-symbols-outlined" style="font-size:15px">pin_drop</span>%s</span>
+        <span style="background:var(--surface2);border-radius:9px;padding:7px 13px;font-size:.83rem;font-weight:600;color:var(--muted);display:inline-flex;align-items:center;gap:5px"><span class="material-symbols-outlined" style="font-size:15px">apartment</span>Centro de Copiapó</span>
       </div>
     </div>
   </div>
@@ -474,19 +474,19 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
         <div><div class="r-big">%s</div></div>
         <div><div class="stars">★★★★★</div><div class="r-count">Valoraciones Google</div></div>
       </div>
-      <div class="i-row"><div class="i-icon r">📍</div><div class="i-txt"><h4>Dirección</h4><p>Colipí 484, Copiapó, Atacama</p><a href="https://maps.google.com/?q=Plaza+Real+Copiap%%C3%%B3" target="_blank" rel="noopener">Ver en Google Maps →</a></div></div>
-      <div class="i-row"><div class="i-icon y">🏬</div><div class="i-txt"><h4>Nivel &amp; Local</h4><p>%s</p></div></div>
-      <div class="i-row"><div class="i-icon g">🕐</div><div class="i-txt"><h4>Horario Lun–Vie</h4><p>%s</p></div></div>
-      <div class="i-row"><div class="i-icon b">💳</div><div class="i-txt"><h4>Medios de pago</h4><p>%s</p></div></div>
+      <div class="i-row"><div class="i-icon r"><span class="material-symbols-outlined">location_on</span></div><div class="i-txt"><h4>Dirección</h4><p>Colipí 484, Copiapó, Atacama</p><a href="https://maps.google.com/?q=Plaza+Real+Copiap%%C3%%B3" target="_blank" rel="noopener">Ver en Google Maps →</a></div></div>
+      <div class="i-row"><div class="i-icon y"><span class="material-symbols-outlined">storefront</span></div><div class="i-txt"><h4>Nivel &amp; Local</h4><p>%s</p></div></div>
+      <div class="i-row"><div class="i-icon g"><span class="material-symbols-outlined">schedule</span></div><div class="i-txt"><h4>Horario Lun–Vie</h4><p>%s</p></div></div>
+      <div class="i-row"><div class="i-icon b"><span class="material-symbols-outlined">payments</span></div><div class="i-txt"><h4>Medios de pago</h4><p>%s</p></div></div>
     </div>
     <div class="act-card fi">
       <h2>Contactar &amp; Llegar</h2>
-      <a href="%s" class="a-btn red"><span class="ai">📞</span><span class="al">Llamar al local</span><span class="ar">→</span></a>
-      <a href="https://maps.google.com/?q=Plaza+Real+Copiap%%C3%%B3" target="_blank" rel="noopener" class="a-btn"><span class="ai">🗺️</span><span class="al">Cómo llegar</span><span class="ar">→</span></a>
-      <a href="buscador-tiendas.html" class="a-btn"><span class="ai">🔍</span><span class="al">Ver todas las tiendas</span><span class="ar">→</span></a>
+      <a href="%s" class="a-btn red"><span class="ai"><span class="material-symbols-outlined">call</span></span><span class="al">Llamar al local</span><span class="ar">→</span></a>
+      <a href="https://maps.google.com/?q=Plaza+Real+Copiap%%C3%%B3" target="_blank" rel="noopener" class="a-btn"><span class="ai"><span class="material-symbols-outlined">directions</span></span><span class="al">Cómo llegar</span><span class="ar">→</span></a>
+      <a href="buscador-tiendas.html" class="a-btn"><span class="ai"><span class="material-symbols-outlined">search</span></span><span class="al">Ver todas las tiendas</span><span class="ar">→</span></a>
     </div>
     <div class="card fi">
-      <h2>🏬 También te puede gustar</h2>
+      <h2><span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">storefront</span>También te puede gustar</h2>
       <div class="sim-grid">%s</div>
     </div>
   </div>
