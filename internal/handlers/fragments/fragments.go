@@ -156,75 +156,51 @@ func Eventos(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 func Noticias(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		blocks := fetchContentBlocks(pb,
-			"status = 'publicado' && category = 'NOTICIA'", 3)
+			"status = 'publicado' && (category = 'NOTICIA' || category = 'AVISO' || category = 'PUBLICIDAD')", 3)
 
 		type noticia struct{ ID, Title, Excerpt, Category, Date, ImageURL string }
 		var noticias []noticia
 
-		if len(blocks) > 0 {
-			for _, b := range blocks {
-				noticias = append(noticias, noticia{
-					ID: b.ID, Title: b.Title, Excerpt: b.Desc,
-					Category: b.Category, Date: b.Date, ImageURL: b.ImageURL,
-				})
-			}
-		} else {
-			noticias = []noticia{
-				{ID: "", Title: "Resultados SIMCE 2025 — Colegio San Lorenzo entre los mejores de Atacama", Excerpt: "El Colegio San Lorenzo obtuvo resultados destacados en las pruebas SIMCE de 4° y 8° básico, posicionándose entre los establecimientos de mejor rendimiento en la Región de Atacama.", Category: "NOTICIA", Date: "28 Mar 2026"},
-				{ID: "", Title: "Equipo sub-14 clasifica al Campeonato Regional de Fútbol", Excerpt: "Nuestro equipo de fútbol sub-14 representará a Atacama en el campeonato regional 2026 tras ganar la etapa comunal con resultados históricos.", Category: "NOTICIA", Date: "25 Mar 2026"},
-				{ID: "", Title: "Festival de Arte EDEX 2026 — Más de 200 estudiantes en escena", Excerpt: "Más de 200 estudiantes participaron en la muestra artística anual del programa EDEX, mostrando sus talentos en música, danza, teatro y artes visuales.", Category: "NOTICIA", Date: "20 Mar 2026"},
-			}
+		for _, b := range blocks {
+			noticias = append(noticias, noticia{
+				ID: b.ID, Title: b.Title, Excerpt: b.Desc,
+				Category: b.Category, Date: b.Date, ImageURL: b.ImageURL,
+			})
 		}
-
-		bgColors := []string{
-			"var(--md-primary-container)",
-			"var(--md-secondary-container)",
-			"var(--md-surface-container-high)",
-		}
-		delays := []string{"", " reveal-delay-1", " reveal-delay-2"}
 
 		var sb strings.Builder
-		sb.WriteString(`<section class="noticias-section" id="noticias"><div class="container">`)
-		sb.WriteString(`<p class="label-primary reveal visible">Noticias y Prensa</p>`)
-		sb.WriteString(`<h2 class="headline-l reveal visible" style="margin-bottom:var(--sp-40)">Últimas noticias</h2>`)
-		sb.WriteString(`<div class="noticias-grid">`)
+		if len(noticias) == 0 {
+			sb.WriteString(`<div style="grid-column:1/-1;text-align:center;padding:48px 0;color:#6B6B6B">Aún no hay comunicados publicados.</div>`)
+			c.Set("Content-Type", "text/html; charset=utf-8")
+			return c.SendString(sb.String())
+		}
 
-		for i, n := range noticias {
-			featuredClass := ""
-			if i == 0 {
-				featuredClass = " noticia-featured"
-			}
-			thumbInner := ""
+		for _, n := range noticias {
+			thumbInner := `<div style="width:100%;height:100%;background:linear-gradient(135deg,#E8242A22,#F5C80022);display:flex;align-items:center;justify-content:center;font-size:2rem">📰</div>`
 			if n.ImageURL != "" {
-				thumbInner = fmt.Sprintf(`<img src="%s" style="width:100%%;height:100%%;object-fit:cover" alt="%s"/>`,
+				thumbInner = fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy" style="width:100%%;height:100%%;object-fit:cover;display:block">`,
 					template.HTMLEscapeString(n.ImageURL), template.HTMLEscapeString(n.Title))
 			}
-			leerHref := "#"
+			leerHref := "noticias.html"
 			if n.ID != "" {
 				leerHref = "/noticias/" + n.ID
 			}
-			sb.WriteString(fmt.Sprintf(`
-      <article class="noticia-card%s reveal visible%s">
-        <div class="noticia-thumb" style="background:%s">%s</div>
-        <div class="noticia-body">
-          <span class="noticia-cat">%s</span>
-          <h3>%s</h3>
-          <p>%s</p>
-        </div>
-        <div class="noticia-meta">
-          <span class="noticia-fecha">%s</span>
-          <a href="%s" class="noticia-leer">Leer más →</a>
-        </div>
-      </article>`,
-				featuredClass, delays[i%len(delays)], bgColors[i%len(bgColors)], thumbInner,
+			sb.WriteString(fmt.Sprintf(`<a href="%s" class="n-card">
+  <div class="n-thumb">%s<span class="n-cat">%s</span></div>
+  <div class="n-body">
+    <h3 class="n-title">%s</h3>
+    <p class="n-excerpt">%s</p>
+  </div>
+  <div class="n-foot"><span class="n-date">%s</span><span class="n-arr">Leer más →</span></div>
+</a>`,
+				template.HTMLEscapeString(leerHref),
+				thumbInner,
 				template.HTMLEscapeString(n.Category),
 				template.HTMLEscapeString(n.Title),
 				template.HTMLEscapeString(n.Excerpt),
-				n.Date, leerHref,
+				template.HTMLEscapeString(n.Date),
 			))
 		}
-
-		sb.WriteString(`</div></div></section>`)
 		c.Set("Content-Type", "text/html; charset=utf-8")
 		return c.SendString(sb.String())
 	}
@@ -451,13 +427,17 @@ func Blog(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 func NoticiasPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		q := strings.TrimSpace(c.Query("q", ""))
+		catFilter := strings.ToUpper(strings.TrimSpace(c.Query("cat", "")))
 		page := c.QueryInt("page", 1)
 		if page < 1 {
 			page = 1
 		}
 		const pageSize = 9
 
-		pbFilter := "status = 'publicado' && category = 'NOTICIA'"
+		pbFilter := "status = 'publicado' && (category = 'NOTICIA' || category = 'AVISO' || category = 'PUBLICIDAD')"
+		if catFilter == "NOTICIA" || catFilter == "AVISO" || catFilter == "PUBLICIDAD" {
+			pbFilter = fmt.Sprintf("status = 'publicado' && category = '%s'", catFilter)
+		}
 		if q != "" {
 			safeQ := strings.ReplaceAll(strings.ReplaceAll(q, "'", ""), "\\", "")
 			pbFilter += fmt.Sprintf(" && (title ~ '%s' || description ~ '%s')", safeQ, safeQ)
@@ -470,6 +450,7 @@ func NoticiasPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			ID       string
 			Title    string
 			Excerpt  string
+			Category string
 			Date     string
 			ImageURL string
 		}
@@ -490,6 +471,7 @@ func NoticiasPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 					ID:       r.Id,
 					Title:    r.GetString("title"),
 					Excerpt:  r.GetString("description"),
+					Category: r.GetString("category"),
 					Date:     dateStr,
 					ImageURL: r.GetString("image_url"),
 				})
@@ -503,77 +485,71 @@ func NoticiasPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 		}
 
 		if len(noticias) == 0 && page == 1 {
-			msg := "No hay noticias publicadas."
+			msg := "No hay comunicados publicados."
 			if q != "" {
 				msg = "Sin resultados para esa búsqueda."
 			}
-			sb.WriteString(fmt.Sprintf(`<div style="grid-column:1/-1;text-align:center;padding:64px 24px;color:var(--md-outline)"><p style="font-size:15px">%s</p></div>`, msg))
+			sb.WriteString(fmt.Sprintf(`<div style="grid-column:1/-1;text-align:center;padding:64px 24px;color:#6B6B6B"><p style="font-size:15px">%s</p></div>`, msg))
 		} else {
-			bgColors := []string{
-				"var(--md-primary-container)",
-				"var(--md-secondary-container)",
-				"var(--md-surface-container-high)",
-			}
-			for i, n := range noticias {
-				thumbInner := ""
+			for _, n := range noticias {
+				thumbInner := `<div style="width:100%;height:100%;background:linear-gradient(135deg,#E8242A22,#F5C80022);display:flex;align-items:center;justify-content:center;font-size:2.2rem">📰</div>`
 				if n.ImageURL != "" {
-					thumbInner = fmt.Sprintf(`<img src="%s" style="width:100%%;height:100%%;object-fit:cover" alt="%s"/>`,
+					thumbInner = fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy" style="width:100%%;height:100%%;object-fit:cover;display:block">`,
 						template.HTMLEscapeString(n.ImageURL), template.HTMLEscapeString(n.Title))
 				}
 				leerHref := "#"
 				if n.ID != "" {
 					leerHref = "/noticias/" + n.ID
 				}
-				sb.WriteString(fmt.Sprintf(`
-      <article class="noticia-card-page">
-        <div class="noticia-thumb-page" style="background:%s">%s</div>
-        <div class="noticia-body-page">
-          <h3>%s</h3>
-          <p>%s</p>
-        </div>
-        <div class="noticia-meta-page">
-          <span class="noticia-fecha-page">%s</span>
-          <a href="%s" class="noticia-leer-page">Leer más →</a>
-        </div>
-      </article>`,
-					bgColors[i%len(bgColors)],
+				sb.WriteString(fmt.Sprintf(`<a href="%s" class="n-card">
+  <div class="n-thumb">%s<span class="n-cat">%s</span></div>
+  <div class="n-body">
+    <h3 class="n-title">%s</h3>
+    <p class="n-excerpt">%s</p>
+  </div>
+  <div class="n-foot"><span class="n-date">%s</span><span class="n-arr">Leer más →</span></div>
+</a>`,
+					template.HTMLEscapeString(leerHref),
 					thumbInner,
+					template.HTMLEscapeString(n.Category),
 					template.HTMLEscapeString(n.Title),
 					template.HTMLEscapeString(n.Excerpt),
-					n.Date,
-					leerHref,
+					template.HTMLEscapeString(n.Date),
 				))
 			}
+		}
+
+		buildNext := func() string {
+			nextURL := fmt.Sprintf("/fragments/noticias-page?page=%d", page+1)
+			if q != "" {
+				nextURL += "&q=" + url.QueryEscape(q)
+			}
+			if catFilter != "" {
+				nextURL += "&cat=" + url.QueryEscape(catFilter)
+			}
+			return nextURL
 		}
 
 		if page == 1 {
 			sb.WriteString(`</div>`)
 			if hasMore {
-				nextURL := fmt.Sprintf("/fragments/noticias-page?page=%d", page+1)
-				if q != "" {
-					nextURL += "&q=" + url.QueryEscape(q)
-				}
 				sb.WriteString(fmt.Sprintf(`<div id="np-load-more" style="text-align:center;padding:32px 0 8px">
   <button class="filtro-chip" style="padding:12px 28px;font-size:13px"
           hx-get="%s" hx-target="#noticias-page-grid" hx-swap="beforeend">
     Cargar más
   </button>
-</div>`, nextURL))
+</div>`, buildNext()))
 			} else {
 				sb.WriteString(`<div id="np-load-more"></div>`)
 			}
 		} else {
 			if hasMore {
-				nextURL := fmt.Sprintf("/fragments/noticias-page?page=%d", page+1)
-				if q != "" {
-					nextURL += "&q=" + url.QueryEscape(q)
-				}
 				sb.WriteString(fmt.Sprintf(`<div id="np-load-more" hx-swap-oob="true" style="text-align:center;padding:32px 0 8px">
   <button class="filtro-chip" style="padding:12px 28px;font-size:13px"
           hx-get="%s" hx-target="#noticias-page-grid" hx-swap="beforeend">
     Cargar más
   </button>
-</div>`, nextURL))
+</div>`, buildNext()))
 			} else {
 				sb.WriteString(`<div id="np-load-more" hx-swap-oob="true"></div>`)
 			}

@@ -1,247 +1,251 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<link rel="icon" href="/static/logo.webp" type="image/webp"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Noticias — Colegio San Lorenzo · Copiapó</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
-<script src="https://unpkg.com/htmx.org@1.9.10/dist/htmx.min.js" defer></script>
-<style>
-:root{
-  --md-primary:#9B1230;--md-on-primary:#fff;
-  --md-primary-container:#F5E0E4;--md-on-primary-container:#5C0A1E;
-  --md-primary-dark:#6E0C22;
-  --md-secondary:#9B9EA4;--md-secondary-container:#E8E8EC;--md-on-secondary-container:#3A3C42;
-  --md-surface:#FAF8F7;--md-surface-container-low:#F7F4F5;--md-surface-bright:#FFFFFF;
-  --md-surface-container-high:#ECE8E9;
-  --md-on-surface:#1C1B1A;--md-on-surface-variant:#4D4B4C;
-  --md-outline:#7E7B7C;--md-outline-variant:#CEC9CA;
-  --r-sm:12px;--r-md:16px;--r-lg:24px;--r-xl:32px;--r-2xl:40px;--r-full:9999px;
-  --glass-bg:rgba(250,248,247,0.72);--glass-blur:blur(20px) saturate(180%);
-  --glass-border:rgba(155,18,48,0.10);--glass-shadow:0 8px 32px rgba(155,18,48,0.08);
-  --elev-2:0 2px 6px rgba(28,27,26,.08);--elev-3:0 4px 12px rgba(28,27,26,.10);--elev-4:0 8px 24px rgba(28,27,26,.12);
-  --ease-express:cubic-bezier(0.05,0.7,0.1,1.0);
-  --font-display:'DM Serif Display',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
-  --max-w:1200px;--nav-h:72px;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-*{-webkit-tap-highlight-color:transparent}
-body{font-family:var(--font-body);background:var(--md-surface);color:var(--md-on-surface);line-height:1.6;overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");opacity:.018;mix-blend-mode:multiply}
-.container{max-width:var(--max-w);margin:0 auto;padding:0 24px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunicados y Noticias — Plaza Real Copiapó</title>
+  <meta name="description" content="Actualidad, comunicados, avisos y publicidad de Plaza Real Copiapó.">
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,900&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --red:#E8242A;--red-d:#B91A1F;--yellow:#F5C800;--green:#2DB37A;
+      --dark:#0E0E0E;--dark2:#181818;--mid:#555;
+      --surface:#F5F4F1;--surface2:#EBEBEA;
+      --white:#FFF;--text:#0E0E0E;--muted:#6B6B6B;--border:#E0DFDC;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Geist',system-ui,sans-serif;background:var(--surface);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
 
-/* NAV */
-.nav{position:sticky;top:0;z-index:200;height:var(--nav-h);background:var(--glass-bg);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:1px solid var(--glass-border);box-shadow:var(--glass-shadow)}
-.nav.scrolled{background:rgba(250,248,247,0.90);box-shadow:0 4px 24px rgba(155,18,48,0.12)}
-.nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 24px;height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
-.nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0}
-.nav-logo{width:44px;height:44px;border-radius:var(--r-sm);object-fit:contain;filter:drop-shadow(0 2px 4px rgba(155,18,48,0.2));transition:transform 300ms var(--ease-express)}
-.nav-brand:hover .nav-logo{transform:scale(1.08)}
-.nav-brand-name{font-family:var(--font-display);font-size:16px;color:var(--md-on-surface);line-height:1.1}
-.nav-brand-sub{font-size:10px;font-weight:500;letter-spacing:.12em;color:var(--md-outline);text-transform:uppercase}
-.nav-links{display:flex;align-items:center;gap:2px}
-.nav-links a{font-size:13.5px;color:var(--md-on-surface-variant);text-decoration:none;padding:8px 14px;border-radius:var(--r-full);transition:background 200ms,color 200ms}
-.nav-links a:hover,.nav-links a.active{background:var(--md-primary-container);color:var(--md-on-primary-container)}
-.nav-links a.active{font-weight:500}
-.nav-cta{font-size:13px;font-weight:500;color:#fff;background:var(--md-primary);padding:10px 22px;border-radius:var(--r-full);text-decoration:none;flex-shrink:0;box-shadow:0 2px 8px rgba(155,18,48,0.30);transition:background 200ms,transform 200ms}
-.nav-cta:hover{background:var(--md-primary-dark);transform:translateY(-2px)}
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:200;background:rgba(14,14,14,.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 32px;height:68px;display:flex;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;text-decoration:none}
+    .logo img{height:42px;width:auto;display:block;filter:brightness(0)invert(1)}
+    .nav-links{display:flex;gap:36px;align-items:center}
+    .nav-links a{color:rgba(255,255,255,.65);text-decoration:none;font-size:.87rem;font-weight:500;transition:color .18s}
+    .nav-links a:hover,.nav-links a.active{color:#fff}
+    .nav-cta{background:var(--red)!important;color:#fff!important;padding:9px 22px;border-radius:100px;font-weight:700!important;font-size:.87rem!important}
+    .nav-cta:hover{opacity:.88}
+    .burger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:4px}
+    .burger span{display:block;width:24px;height:2px;background:#fff;border-radius:2px}
+    .mob-menu{display:none;position:fixed;top:68px;left:0;right:0;background:var(--dark2);z-index:199;padding:16px 24px 24px;flex-direction:column;gap:2px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .mob-menu a{color:rgba(255,255,255,.78);text-decoration:none;font-size:1rem;font-weight:500;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);display:block}
+    .mob-menu.open{display:flex}
 
-/* PAGE HERO */
-.page-hero{background:var(--md-primary);padding:100px 24px 80px;position:relative;overflow:hidden}
-.page-hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,0.03) 0px,rgba(255,255,255,0.03) 1px,transparent 1px,transparent 20px)}
-.page-hero::after{content:'';position:absolute;right:-100px;top:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.08) 0%,transparent 70%);pointer-events:none}
-.page-hero-inner{max-width:var(--max-w);margin:0 auto;position:relative;z-index:1}
-.page-breadcrumb{font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:16px;display:flex;align-items:center;gap:8px}
-.page-breadcrumb a{color:rgba(255,255,255,0.55);text-decoration:none}
-.page-hero h1{font-family:var(--font-display);font-size:clamp(36px,5.5vw,64px);font-weight:400;color:#fff;line-height:1.08;margin-bottom:16px;letter-spacing:-0.015em}
-.page-hero-desc{font-size:18px;color:rgba(255,255,255,0.75);max-width:560px;line-height:1.75}
+    /* PAGE HERO */
+    .page-hdr{
+      background:linear-gradient(rgba(14,14,14,.75),rgba(14,14,14,.88)),
+                 url('https://plazareal.cl/wp-content/uploads/2025/12/plaza-real-hall-pantallas.jpeg');
+      background-size:cover;background-position:center;background-attachment:fixed;
+      padding:120px 24px 64px;position:relative;overflow:hidden
+    }
+    .page-hdr::before{content:'';position:absolute;width:480px;height:480px;background:var(--red);border-radius:50%;top:-240px;right:-160px;opacity:.12;filter:blur(60px)}
+    .page-hdr::after{content:'';position:absolute;width:320px;height:320px;background:var(--yellow);border-radius:50%;bottom:-160px;left:-80px;opacity:.10;filter:blur(60px)}
+    .page-hdr-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+    .bc{font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:14px}
+    .bc a{color:rgba(255,255,255,.55);text-decoration:none}
+    .bc a:hover{color:#fff}
+    .page-eye{font-size:.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
+    .page-h1{font-family:'Montserrat',sans-serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:10px;line-height:1.05}
+    .page-h1 em{font-style:italic;color:var(--yellow)}
+    .page-sub{color:rgba(255,255,255,.65);font-size:.97rem;max-width:620px;line-height:1.65;font-weight:300}
 
-/* SECTION */
-.section{padding:72px 24px}
-.label-primary{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--md-primary)}
-.headline-l{font-family:var(--font-display);font-size:clamp(28px,4vw,44px);line-height:1.12}
+    /* SECTION */
+    .container{max-width:1200px;margin:0 auto;padding:0 24px}
+    .section{padding:56px 0 96px}
 
-/* SEARCH */
-.search-wrap{position:relative;margin-bottom:16px}
-.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--md-outline)}
-.search-input{
-  width:100%;padding:11px 16px 11px 40px;border-radius:9999px;
-  border:1.5px solid var(--md-outline-variant);background:var(--md-surface-bright);
-  font-size:14px;font-family:var(--font-body);color:var(--md-on-surface);
-  outline:none;transition:border-color 200ms
-}
-.search-input:focus{border-color:var(--md-primary)}
+    /* TOOLS */
+    .tools-wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:28px}
+    .search-wrap{position:relative;flex:1;min-width:240px}
+    .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted)}
+    .search-input{
+      width:100%;padding:12px 18px 12px 42px;border-radius:100px;
+      border:1.5px solid var(--border);background:var(--white);
+      font-family:'Geist',sans-serif;font-size:.93rem;color:var(--text);
+      outline:none;transition:border-color .2s
+    }
+    .search-input:focus{border-color:var(--red)}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}
+    .chip{
+      font-family:'Geist',sans-serif;font-size:.77rem;font-weight:600;
+      padding:9px 18px;border-radius:100px;border:1.5px solid var(--border);
+      background:var(--white);color:var(--mid);cursor:pointer;
+      transition:all .18s;text-decoration:none;display:inline-flex;align-items:center;gap:6px
+    }
+    .chip:hover{border-color:var(--red);color:var(--red)}
+    .chip.active{background:var(--red);border-color:var(--red);color:#fff}
 
-/* NOTICIAS GRID */
-.noticias-page-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:24px;
-  margin-bottom:0
-}
-.noticia-card-page{
-  background:var(--md-surface-bright);border-radius:var(--r-xl);overflow:hidden;
-  border:1px solid var(--md-outline-variant);display:flex;flex-direction:column;
-  transition:transform 300ms var(--ease-express),box-shadow 300ms var(--ease-express)
-}
-.noticia-card-page:hover{transform:translateY(-5px);box-shadow:var(--elev-4)}
-.noticia-thumb-page{
-  width:100%;aspect-ratio:16/9;overflow:hidden;flex-shrink:0;
-}
-.noticia-thumb-page img{width:100%;height:100%;object-fit:cover;display:block}
-.noticia-body-page{padding:22px 22px 12px;flex:1}
-.noticia-body-page h3{font-family:var(--font-display);font-size:19px;color:var(--md-on-surface);line-height:1.25;margin-bottom:10px}
-.noticia-body-page p{font-size:14px;color:var(--md-on-surface-variant);line-height:1.65;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.noticia-meta-page{padding:12px 22px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.noticia-fecha-page{font-size:12px;color:var(--md-outline)}
-.noticia-leer-page{font-size:13px;font-weight:500;color:var(--md-primary);text-decoration:none;transition:color 200ms}
-.noticia-leer-page:hover{color:var(--md-primary-dark)}
+    /* NEWS CARDS */
+    .noticias-page-grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(308px,1fr));
+      gap:20px;margin-bottom:0
+    }
+    .n-card{background:var(--white);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;box-shadow:0 1px 10px rgba(0,0,0,.06);transition:transform .22s,box-shadow .22s;border:1px solid var(--border)}
+    .n-card:hover{transform:translateY(-5px);box-shadow:0 18px 44px rgba(0,0,0,.10)}
+    .n-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--surface2)}
+    .n-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .n-cat{position:absolute;top:12px;left:12px;background:var(--red);color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:100px}
+    .n-body{padding:20px 22px 10px;flex:1;display:flex;flex-direction:column;gap:8px}
+    .n-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.02rem;line-height:1.3;color:var(--text)}
+    .n-excerpt{font-size:.87rem;line-height:1.6;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:300}
+    .n-foot{padding:10px 22px 20px;display:flex;align-items:center;justify-content:space-between}
+    .n-date{font-size:.74rem;color:var(--muted);font-weight:600}
+    .n-arr{font-size:.82rem;color:var(--red);font-weight:700}
 
-/* Load-more button */
-.filtro-chip{
-  font-size:12px;font-weight:500;padding:7px 16px;border-radius:var(--r-full);
-  border:1.5px solid var(--md-outline-variant);background:transparent;
-  color:var(--md-on-surface-variant);cursor:pointer;
-  transition:all 200ms var(--ease-express);font-family:var(--font-body)
-}
-.filtro-chip:hover{border-color:var(--md-primary);color:var(--md-primary)}
+    .filtro-chip{
+      font-family:'Geist',sans-serif;font-size:.92rem;font-weight:700;
+      padding:13px 32px;border-radius:100px;border:none;cursor:pointer;
+      background:var(--dark);color:#fff;transition:background .2s
+    }
+    .filtro-chip:hover{background:var(--red)}
 
-/* HTMX loading indicator */
-.htmx-request .np-loader{display:block}
-.np-loader{display:none;text-align:center;padding:20px;color:var(--md-outline);font-size:13px}
+    .np-loader{display:none;text-align:center;padding:20px;color:var(--muted);font-size:.9rem}
+    .htmx-request .np-loader{display:block}
 
-/* FOOTER */
-footer{background:var(--md-inverse-surface);color:rgba(255,255,255,0.75);padding:64px 24px 32px}
-.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;max-width:var(--max-w);margin:0 auto}
-.footer-brand{font-family:var(--font-display);font-size:20px;color:#fff;margin-bottom:10px}
-.footer-sub{font-size:13px;opacity:.6;line-height:1.65}
-.footer-col h4{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:16px}
-.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.7);text-decoration:none;margin-bottom:8px;transition:color 200ms}
-.footer-col a:hover{color:#fff}
-.footer-bottom{max-width:var(--max-w);margin:40px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;font-size:12px;color:rgba(255,255,255,.4)}
+    /* FOOTER */
+    .footer{background:#080808;color:rgba(255,255,255,.52);margin-top:64px}
+    .f-top{padding:58px 24px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;max-width:1200px;margin:0 auto}
+    .f-logo-img{height:32px;width:auto;display:block;filter:brightness(0)invert(1);margin-bottom:10px}
+    .f-p{font-size:.83rem;line-height:1.7;max-width:252px;margin-bottom:20px}
+    .f-col h4{font-family:'Montserrat',sans-serif;font-weight:700;color:#fff;font-size:.9rem;margin-bottom:13px;letter-spacing:-.2px}
+    .f-col a{display:block;color:rgba(255,255,255,.42);text-decoration:none;font-size:.81rem;margin-bottom:8px;transition:color .18s}
+    .f-col a:hover{color:#fff}
+    .f-bot{border-top:1px solid rgba(255,255,255,.07);padding:16px 24px;max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;font-size:.76rem}
 
-@media(max-width:768px){
-  :root{--nav-h:60px}
-  .nav-links{display:none}
-  .footer-grid{grid-template-columns:1fr}
-  .noticias-page-grid{grid-template-columns:1fr}
-}
-</style>
+    /* WA */
+    .wa{position:fixed;bottom:26px;right:26px;z-index:300;width:52px;height:52px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.42);text-decoration:none}
+    .wa svg{width:25px;height:25px;fill:#fff}
+
+    @media(max-width:1024px){.f-top{grid-template-columns:1fr 1fr;gap:28px}}
+    @media(max-width:768px){.nav-links{display:none}.burger{display:flex}.noticias-page-grid{grid-template-columns:1fr}.f-top{grid-template-columns:1fr;gap:24px}.f-bot{flex-direction:column;gap:6px;text-align:center}}
+  </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav" id="main-nav">
-  <div class="nav-inner">
-    <a href="/" class="nav-brand">
-      <img src="/static/logo.webp" alt="Colegio San Lorenzo" class="nav-logo"/>
-      <div>
-        <div class="nav-brand-name">San Lorenzo</div>
-        <div class="nav-brand-sub">Copiapó · Atacama</div>
-      </div>
-    </a>
-    <nav class="nav-links">
-      <a href="/">Inicio</a>
-      <a href="/nuestro-colegio.html">Nuestro Colegio</a>
-      <a href="/comunicados.html">Comunicados</a>
-      <a href="/noticias.html" class="active">Noticias</a>
-      <a href="/cepad.html">Apoderados</a>
-      <a href="/ceal.html">Alumnos</a>
-    </nav>
-    <a href="/admision.html" class="nav-cta">Admisión 2027</a>
+<!-- NAVBAR -->
+<nav class="navbar" role="navigation" aria-label="Navegación principal">
+  <a href="index.html" class="logo" aria-label="Plaza Real inicio"><img src="https://plazareal.cl/wp-content/uploads/2025/12/logo-mall-plaza-real-2024@3x.png" alt="Plaza Real"></a>
+  <div class="nav-links">
+    <a href="index.html">Inicio</a>
+    <a href="buscador-tiendas.html">Tiendas</a>
+    <a href="noticias.html" class="active">Comunicados</a>
+    <a href="index.html#mapa">Cómo llegar</a>
+    <a href="buscador-tiendas.html" class="nav-cta">Explorar →</a>
   </div>
+  <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span><span></span></button>
 </nav>
-
-<!-- PAGE HERO -->
-<div class="page-hero">
-  <div class="page-hero-inner">
-    <div class="page-breadcrumb">
-      <a href="/">Inicio</a> › Noticias
-    </div>
-    <h1>Noticias y Prensa</h1>
-    <p class="page-hero-desc">Últimas noticias, logros y novedades del Colegio San Lorenzo de Copiapó.</p>
-  </div>
+<div class="mob-menu" id="mobMenu">
+  <a href="index.html">Inicio</a>
+  <a href="buscador-tiendas.html">Tiendas</a>
+  <a href="noticias.html">Comunicados</a>
+  <a href="index.html#mapa">Cómo llegar</a>
 </div>
 
-<!-- NOTICIAS SECTION -->
+<!-- HERO -->
+<header class="page-hdr">
+  <div class="page-hdr-inner">
+    <div class="bc"><a href="index.html">Inicio</a> › Comunicados</div>
+    <p class="page-eye">Sala de prensa</p>
+    <h1 class="page-h1">Comunicados y <em>Noticias</em></h1>
+    <p class="page-sub">Actualidad en Plaza Real: últimas noticias, avisos y publicidad de nuestras tiendas y del centro comercial.</p>
+  </div>
+</header>
+
+<!-- NEWS SECTION -->
 <section class="section">
   <div class="container">
-    <p class="label-primary" style="margin-bottom:8px">Sala de Prensa</p>
-    <h2 class="headline-l" style="margin-bottom:32px">Todas las noticias</h2>
-
-    <!-- Search -->
-    <div class="search-wrap">
-      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input
-        type="search"
-        class="search-input"
-        id="np-search"
-        placeholder="Buscar noticias..."
-        autocomplete="off"
-        hx-get="/fragments/noticias-page"
-        hx-trigger="input changed delay:400ms, search"
-        hx-target="#np-results"
-        hx-swap="innerHTML"
-        name="q"
-      />
+    <div class="tools-wrap">
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input
+          type="search"
+          class="search-input"
+          id="np-search"
+          placeholder="Buscar comunicados..."
+          autocomplete="off"
+          name="q"
+          hx-get="/fragments/noticias-page"
+          hx-trigger="input changed delay:400ms, search"
+          hx-target="#np-results"
+          hx-swap="innerHTML"
+          hx-include="[name=cat]"
+        />
+      </div>
+      <div class="chips" id="np-chips">
+        <button type="button" class="chip active" data-cat=""
+          hx-get="/fragments/noticias-page"
+          hx-target="#np-results"
+          hx-swap="innerHTML"
+          hx-include="[name=q]"
+          onclick="window._npSetCat(this,'')">Todos</button>
+        <button type="button" class="chip" data-cat="NOTICIA"
+          hx-get="/fragments/noticias-page?cat=NOTICIA"
+          hx-target="#np-results"
+          hx-swap="innerHTML"
+          hx-include="[name=q]"
+          onclick="window._npSetCat(this,'NOTICIA')">📰 Noticias</button>
+        <button type="button" class="chip" data-cat="AVISO"
+          hx-get="/fragments/noticias-page?cat=AVISO"
+          hx-target="#np-results"
+          hx-swap="innerHTML"
+          hx-include="[name=q]"
+          onclick="window._npSetCat(this,'AVISO')">📢 Avisos</button>
+        <button type="button" class="chip" data-cat="PUBLICIDAD"
+          hx-get="/fragments/noticias-page?cat=PUBLICIDAD"
+          hx-target="#np-results"
+          hx-swap="innerHTML"
+          hx-include="[name=q]"
+          onclick="window._npSetCat(this,'PUBLICIDAD')">⭐ Publicidad</button>
+      </div>
+      <input type="hidden" name="cat" value=""/>
     </div>
 
-    <!-- Loading indicator -->
-    <div class="np-loader htmx-indicator">Cargando noticias...</div>
+    <div class="np-loader htmx-indicator">Cargando comunicados…</div>
 
-    <!-- Results -->
     <div id="np-results"
          hx-get="/fragments/noticias-page"
          hx-trigger="load"
          hx-swap="innerHTML">
-      <div style="text-align:center;padding:40px 0;color:var(--md-outline);font-size:14px">Cargando...</div>
+      <div style="text-align:center;padding:48px 0;color:var(--muted);font-size:.9rem">
+        <div style="width:24px;height:24px;border:3px solid var(--red);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:10px"></div>
+        Cargando…
+      </div>
     </div>
   </div>
 </section>
 
 <!-- FOOTER -->
-<footer>
-  <div class="footer-grid">
+<footer class="footer" id="footer">
+  <div class="f-top">
     <div>
-      <div class="footer-brand">Colegio San Lorenzo</div>
-      <div class="footer-sub">Copiapó, Región de Atacama<br/>Per laborem ad lucem — desde 1990</div>
+      <img src="https://plazareal.cl/wp-content/uploads/2025/12/logo-mall-plaza-real-2024@3x.png" alt="Plaza Real" class="f-logo-img">
+      <p class="f-p">El centro comercial con más vida de Copiapó, en el corazón de la ciudad.</p>
     </div>
-    <div class="footer-col">
-      <h4>El Colegio</h4>
-      <a href="/nuestro-colegio.html">Nuestro Colegio</a>
-      <a href="/admision.html">Admisión 2027</a>
-      <a href="/edex.html">EDEX</a>
-      <a href="/inclusion.html">Inclusión</a>
-    </div>
-    <div class="footer-col">
-      <h4>Comunidad</h4>
-      <a href="/cepad.html">Apoderados</a>
-      <a href="/ceal.html">Alumnos</a>
-      <a href="/comunicados.html">Comunicados</a>
-      <a href="/noticias.html">Noticias</a>
-    </div>
-    <div class="footer-col">
-      <h4>Contacto</h4>
-      <a href="mailto:info@colegiosanlorenzo.cl">info@colegiosanlorenzo.cl</a>
-      <a href="tel:+56522123456">+56 52 2 123 456</a>
-      <a href="#">Dirección</a>
-    </div>
+    <div class="f-col"><h4>Tiendas</h4><a href="buscador-tiendas.html?cat=tiendas">Moda & Ropa</a><a href="buscador-tiendas.html?cat=restaurantes">Restaurantes</a><a href="buscador-tiendas.html?cat=farmacias">Farmacias</a><a href="buscador-tiendas.html?cat=tecnologia">Tecnología</a></div>
+    <div class="f-col"><h4>Información</h4><a href="index.html#mapa">Cómo llegar</a><a href="#">Horarios</a><a href="#">Arriendos</a><a href="noticias.html">Comunicados</a></div>
+    <div class="f-col"><h4>Contacto</h4><a href="tel:+56512345678">+56 52 1234 5678</a><a href="mailto:contacto@plazareal.cl">contacto@plazareal.cl</a><a href="index.html#mapa">Colipí 484, Copiapó</a></div>
   </div>
-  <div class="footer-bottom">
-    <span>© 2026 Colegio San Lorenzo de Copiapó · RBD XXXXX</span>
-    <span>Diseño y desarrollo digital</span>
-  </div>
+  <div class="f-bot"><span>© 2025 Plaza Real Copiapó. Todos los derechos reservados.</span><span style="color:rgba(255,255,255,.28)">Diseñado con ♥ en Copiapó</span></div>
 </footer>
 
+<a href="https://wa.me/56912345678" target="_blank" rel="noopener" class="wa" aria-label="WhatsApp"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+
 <script>
-// Nav scroll effect
-window.addEventListener('scroll',()=>{
-  document.getElementById('main-nav').classList.toggle('scrolled',window.scrollY>20);
-},{ passive:true });
+@-moz-keyframes-placeholder{};
+</script>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+<script>
+document.getElementById('burger').addEventListener('click',function(){const o=document.getElementById('mobMenu').classList.toggle('open');this.setAttribute('aria-expanded',o)});
+
+window._npSetCat = function(el, cat){
+  document.querySelectorAll('#np-chips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  var hidden = document.querySelector('input[name=cat]');
+  if(hidden) hidden.value = cat;
+};
 </script>
 </body>
 </html>

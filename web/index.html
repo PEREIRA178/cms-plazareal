@@ -142,17 +142,21 @@
     .carousel-dot.active{background:var(--red);width:24px;border-radius:100px}
     @media(max-width:768px){.carousel-slide{height:240px}.carousel-btn{width:36px;height:36px;font-size:.9rem}.carousel-prev{left:16px}.carousel-next{right:16px}}
 
-    /* TESTI */
-    .testi{padding:96px 0;background:var(--white)}
-    .testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(295px,1fr));gap:18px;margin-top:52px}
-    .t-card{background:var(--surface);border-radius:18px;padding:28px;position:relative}
-    .t-card::before{content:'\201C';font-size:4.5rem;line-height:1;color:var(--red);opacity:.14;position:absolute;top:8px;left:16px;font-family:Georgia,serif}
-    .stars{color:var(--yellow);font-size:.85rem;margin-bottom:9px}
-    .t-text{font-size:.91rem;line-height:1.7;color:var(--text);margin-bottom:18px;position:relative;z-index:1}
-    .t-auth{display:flex;align-items:center;gap:11px}
-    .t-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover}
-    .t-name{font-weight:700;font-size:.87rem}
-    .t-role{font-size:.74rem;color:var(--muted)}
+    /* NEWS / COMUNICADOS */
+    .news{padding:96px 0;background:var(--white)}
+    .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(308px,1fr));gap:20px;margin-top:52px}
+    .n-card{background:var(--surface);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;box-shadow:0 1px 10px rgba(0,0,0,.06);transition:transform .22s,box-shadow .22s;border:1px solid var(--border)}
+    .n-card:hover{transform:translateY(-5px);box-shadow:0 18px 44px rgba(0,0,0,.10)}
+    .n-thumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:var(--surface2)}
+    .n-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .n-cat{position:absolute;top:12px;left:12px;background:var(--red);color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:100px}
+    .n-body{padding:20px 22px 10px;flex:1;display:flex;flex-direction:column;gap:8px}
+    .n-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:1.02rem;line-height:1.3;color:var(--text)}
+    .n-excerpt{font-size:.87rem;line-height:1.6;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:300}
+    .n-foot{padding:10px 22px 20px;display:flex;align-items:center;justify-content:space-between}
+    .n-date{font-size:.74rem;color:var(--muted);font-weight:600}
+    .n-arr{font-size:.82rem;color:var(--red);font-weight:700}
+    .news-cta{margin-top:44px;text-align:center}
 
     /* MAP */
     .map-s{padding:96px 0;background:var(--dark2)}
@@ -199,6 +203,7 @@
     /* REVEAL */
     .reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease}
     .reveal.visible{opacity:1;transform:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
     /* RESPONSIVE */
     @media(max-width:1024px){.about-grid{grid-template-columns:1fr}.about-img-wrap{display:none}.map-card{grid-template-columns:1fr}.map-iframe{height:280px}.f-top{grid-template-columns:1fr 1fr;gap:28px}}
@@ -335,14 +340,21 @@
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
-<section class="testi" aria-labelledby="testi-h">
+<!-- COMUNICADOS Y NOTICIAS -->
+<section class="news" aria-labelledby="news-h">
   <div class="container">
-    <div class="reveal" style="text-align:center"><p class="eyebrow">Lo que dicen</p><h2 class="s-title" id="testi-h">Nuestros <em>clientes</em> hablan</h2></div>
-    <div class="testi-grid">
-      <div class="t-card reveal"><div class="stars">★★★★★</div><p class="t-text">Paso aquí casi todos los días al salir del trabajo. Tienen de todo: cafetería para empezar el día, opciones para almorzar y farmacia para lo que necesite. ¡Perfecto!</p><div class="t-auth"><img src="https://picsum.photos/seed/caro/40/40" alt="Carolina M." class="t-avatar"><div><div class="t-name">Carolina M.</div><div class="t-role">Profesional, Copiapó</div></div></div></div>
-      <div class="t-card reveal"><div class="stars">★★★★★</div><p class="t-text">La ubicación en el centro de Copiapó es insuperable. Llego caminando y puedo hacer todas mis compras en un solo lugar. Los precios son buenos y la variedad increíble.</p><div class="t-auth"><img src="https://picsum.photos/seed/andres/40/40" alt="Andrés T." class="t-avatar"><div><div class="t-name">Andrés T.</div><div class="t-role">Estudiante universitario</div></div></div></div>
-      <div class="t-card reveal"><div class="stars">★★★★☆</div><p class="t-text">La variedad de locales es lo mejor: comida, ropa, tecnología y farmacias. Me encanta que esté todo en un solo lugar, pleno centro de la ciudad.</p><div class="t-auth"><img src="https://picsum.photos/seed/val/40/40" alt="Valentina R." class="t-avatar"><div><div class="t-name">Valentina R.</div><div class="t-role">Vecina de Copiapó</div></div></div></div>
+    <div class="reveal" style="text-align:center"><p class="eyebrow">Comunicados y Noticias</p><h2 class="s-title" id="news-h">Actualidad en <em>Plaza Real</em></h2></div>
+    <div class="news-grid"
+         hx-get="/fragments/noticias"
+         hx-trigger="load"
+         hx-swap="innerHTML">
+      <div style="grid-column:1/-1;text-align:center;padding:48px 0;color:var(--muted)">
+        <div style="width:24px;height:24px;border:3px solid var(--red);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:10px"></div>
+        Cargando comunicados…
+      </div>
+    </div>
+    <div class="news-cta">
+      <a href="noticias.html" class="btn-red">Ver todos los comunicados →</a>
     </div>
   </div>
 </section>
