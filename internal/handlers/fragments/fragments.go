@@ -175,7 +175,7 @@ func Noticias(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			return c.SendString(sb.String())
 		}
 
-		for _, n := range noticias {
+		for i, n := range noticias {
 			thumbInner := `<div style="width:100%;height:100%;background:linear-gradient(135deg,#E8242A22,#F5C80022);display:flex;align-items:center;justify-content:center;font-size:2rem">📰</div>`
 			if n.ImageURL != "" {
 				thumbInner = fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy" style="width:100%%;height:100%%;object-fit:cover;display:block">`,
@@ -185,7 +185,11 @@ func Noticias(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			if n.ID != "" {
 				leerHref = "/noticias/" + n.ID
 			}
-			sb.WriteString(fmt.Sprintf(`<a href="%s" class="n-card">
+			extraClass := ""
+			if i == 0 {
+				extraClass = " n-big"
+			}
+			sb.WriteString(fmt.Sprintf(`<a href="%s" class="n-card%s">
   <div class="n-thumb">%s<span class="n-cat">%s</span></div>
   <div class="n-body">
     <h3 class="n-title">%s</h3>
@@ -194,6 +198,7 @@ func Noticias(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
   <div class="n-foot"><span class="n-date">%s</span><span class="n-arr">Leer más →</span></div>
 </a>`,
 				template.HTMLEscapeString(leerHref),
+				extraClass,
 				thumbInner,
 				template.HTMLEscapeString(n.Category),
 				template.HTMLEscapeString(n.Title),
