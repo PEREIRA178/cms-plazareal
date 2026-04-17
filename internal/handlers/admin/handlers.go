@@ -658,6 +658,9 @@ func newsFormHTML(id, title, description, status, date, imageUrl, body, category
 func NewsList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		if c.Query("fragment") != "rows" {
+			if c.Get("HX-Request") != "true" {
+				return c.SendFile("./internal/templates/admin/pages/dashboard.html")
+			}
 			return c.SendFile("./internal/templates/admin/pages/news.html")
 		}
 		records, err := pb.FindRecordsByFilter("content_blocks",
@@ -1645,6 +1648,10 @@ func TiendasList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 				if r.GetBool("destacada") {
 					dest = `<span class="badge badge-info" style="font-size:10px">⭐</span>`
 				}
+				nivelLabel := "Placa Comercial"
+				if r.GetString("gal") == "sur" {
+					nivelLabel = "Torre Flamenco"
+				}
 				sb.WriteString(fmt.Sprintf(`<tr>
           <td>%s %s</td>
           <td>%s</td>
@@ -1661,7 +1668,7 @@ func TiendasList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
           </td></tr>`,
 					template.HTMLEscapeString(r.GetString("nombre")), dest,
 					template.HTMLEscapeString(r.GetString("cat")),
-					template.HTMLEscapeString(r.GetString("gal")),
+					template.HTMLEscapeString(nivelLabel),
 					template.HTMLEscapeString(r.GetString("local")),
 					badgeClass, template.HTMLEscapeString(status),
 					r.Id, r.Id,
@@ -1853,7 +1860,7 @@ func tiendaFormHTML(id, nombre, slug, cat, gal, local, logo, tags, desc, about, 
 		catOpts.WriteString(fmt.Sprintf(`<option value="%s"%s>%s</option>`, o.v, s, o.l))
 	}
 
-	gals := []struct{ v, l string }{{"norte", "Galería Norte"}, {"sur", "Galería Sur"}}
+	gals := []struct{ v, l string }{{"norte", "Placa Comercial"}, {"sur", "Torre Flamenco"}}
 	var galOpts strings.Builder
 	for _, o := range gals {
 		s := ""
@@ -1892,7 +1899,7 @@ func tiendaFormHTML(id, nombre, slug, cat, gal, local, logo, tags, desc, about, 
       </div>
       <div class="form-row">
         <div class="form-field"><label>Categoría</label><select name="cat" class="form-input">%s</select></div>
-        <div class="form-field"><label>Galería</label><select name="gal" class="form-input">%s</select></div>
+        <div class="form-field"><label>Nivel</label><select name="gal" class="form-input">%s</select></div>
       </div>
       <div class="form-field"><label>URL Logo</label><input type="url" name="logo" value="%s" class="form-input" placeholder="https://..."/></div>
       <div class="form-field"><label>Tags (separados por coma)</label><input type="text" name="tags" value="%s" class="form-input" placeholder="Café,Frappuccino,WiFi"/></div>

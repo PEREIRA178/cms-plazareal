@@ -124,9 +124,9 @@ func renderTiendaCard(t tienda, i int) string {
 	if logoSrc == "" {
 		logoSrc = fmt.Sprintf("https://picsum.photos/seed/%s/320/148", t.Slug)
 	}
-	galBadge := "🟦 Norte"
+	galBadge := "Placa Comercial"
 	if t.Gal == "sur" {
-		galBadge = "🟧 Sur"
+		galBadge = "Torre Flamenco"
 	}
 	featured := ""
 	if t.Destacada {
@@ -234,16 +234,16 @@ func renderIndexCard(t tienda, i int) string {
 	if logoSrc == "" {
 		logoSrc = fmt.Sprintf("https://picsum.photos/seed/%s/320/160", t.Slug)
 	}
-	galBadge := "🟦 Norte"
+	galBadge := "Placa Comercial"
 	if t.Gal == "sur" {
-		galBadge = "🟧 Sur"
+		galBadge = "Torre Flamenco"
 	}
 	featured := ""
 	if t.Destacada {
 		featured = `<span class="s-badge">⭐ Destacado</span>`
 	}
 	tag := catLabel(t.Cat)
-	return fmt.Sprintf(`<a href="tienda-individual.html?tienda=%s" class="s-card reveal">
+	return fmt.Sprintf(`<a href="tienda-individual.html?tienda=%s" class="s-card">
   <div class="s-card-top">
     <img src="%s" alt="Logo %s" loading="lazy" onerror="this.src='https://picsum.photos/seed/%s/320/160'">
     <span class="s-gallery">%s</span>%s
@@ -399,11 +399,11 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			))
 		}
 
-		galLabel := "Norte"
+		galLabel := "Placa Comercial"
 		if t.Gal == "sur" {
-			galLabel = "Sur"
+			galLabel = "Torre Flamenco"
 		}
-		localInfo := fmt.Sprintf("Galería %s · %s", galLabel, t.Local)
+		localInfo := fmt.Sprintf("%s · %s", galLabel, t.Local)
 		waLink := fmt.Sprintf("https://wa.me/%s?text=Hola,%%20quiero%%20informaci%%C3%%B3n%%20de%%20%s%%20en%%20Plaza%%20Real%%20Copiap%%C3%%B3",
 			t.Whatsapp, template.URLQueryEscaper(t.Nombre))
 		telLink := fmt.Sprintf("tel:%s", strings.ReplaceAll(t.Telefono, " ", ""))
@@ -474,7 +474,7 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
         <div><div class="stars">★★★★★</div><div class="r-count">Valoraciones Google</div></div>
       </div>
       <div class="i-row"><div class="i-icon r">📍</div><div class="i-txt"><h4>Dirección</h4><p>Colipí 484, Copiapó, Atacama</p><a href="https://maps.google.com/?q=Plaza+Real+Copiap%%C3%%B3" target="_blank" rel="noopener">Ver en Google Maps →</a></div></div>
-      <div class="i-row"><div class="i-icon y">🏬</div><div class="i-txt"><h4>Galería &amp; Local</h4><p>%s</p></div></div>
+      <div class="i-row"><div class="i-icon y">🏬</div><div class="i-txt"><h4>Nivel &amp; Local</h4><p>%s</p></div></div>
       <div class="i-row"><div class="i-icon g">🕐</div><div class="i-txt"><h4>Horario Lun–Vie</h4><p>%s</p></div></div>
       <div class="i-row"><div class="i-icon b">💳</div><div class="i-txt"><h4>Medios de pago</h4><p>%s</p></div></div>
     </div>
