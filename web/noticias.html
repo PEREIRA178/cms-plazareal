@@ -13,7 +13,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,900&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --red:#d60d52;--red-d:#A80A40;--yellow:#00a0e3;--green:#2DB37A;
+      --pr-red:#d71055;--pr-blue:#06a0e0;--pr-lime:#acc60d;
+      --red:var(--pr-red);--red-d:#a80940;--blue:var(--pr-blue);--lime:var(--pr-lime);--green:#2DB37A;
       --dark:#0E0E0E;--dark2:#181818;--mid:#555;
       --surface:#F5F4F1;--surface2:#EBEBEA;
       --white:#FFF;--text:#0E0E0E;--muted:#6B6B6B;--border:#E0DFDC;
@@ -45,14 +46,14 @@
       padding:120px 24px 64px;position:relative;overflow:hidden
     }
     .page-hdr::before{content:'';position:absolute;width:480px;height:480px;background:var(--red);border-radius:50%;top:-240px;right:-160px;opacity:.12;filter:blur(60px)}
-    .page-hdr::after{content:'';position:absolute;width:320px;height:320px;background:var(--yellow);border-radius:50%;bottom:-160px;left:-80px;opacity:.10;filter:blur(60px)}
+    .page-hdr::after{content:'';position:absolute;width:320px;height:320px;background:var(--blue);border-radius:50%;bottom:-160px;left:-80px;opacity:.10;filter:blur(60px)}
     .page-hdr-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
     .bc{font-size:.78rem;color:rgba(255,255,255,.55);margin-bottom:14px}
     .bc a{color:rgba(255,255,255,.55);text-decoration:none}
     .bc a:hover{color:#fff}
     .page-eye{font-size:.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
     .page-h1{font-family:'Montserrat',sans-serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:10px;line-height:1.05}
-    .page-h1 em{font-style:italic;color:var(--yellow)}
+    .page-h1 em{font-style:italic;color:var(--blue)}
     .page-sub{color:rgba(255,255,255,.65);font-size:.97rem;max-width:620px;line-height:1.65;font-weight:300}
 
     /* SECTION */

@@ -10,8 +10,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,900&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
   <style>
-    :root{--red:#d60d52;--red-d:#A80A40;--yellow:#00a0e3;--green:#2DB37A;--magenta:#D4175A;--orange:#F4722B;--dark:#0E0E0E;--dark2:#181818;--dark3:#242424;--mid:#555;--surface:#F5F4F1;--surface2:#EBEBEA;--white:#FFFFFF;--text:#0E0E0E;--muted:#6B6B6B;--border:#E0DFDC}
+    :root{
+      /* ── Plaza Real brand palette ── */
+      --pr-red:#d71055;--pr-blue:#06a0e0;--pr-lime:#acc60d;
+      /* ── Semantic aliases ── */
+      --red:var(--pr-red);--red-d:#a80940;
+      --blue:var(--pr-blue);--blue-d:#0579a8;
+      --lime:var(--pr-lime);
+      --green:#2DB37A;--magenta:#D4175A;--orange:#F4722B;
+      --dark:#0E0E0E;--dark2:#181818;--dark3:#242424;--mid:#555;
+      --surface:#F5F4F1;--surface2:#EBEBEA;--white:#FFFFFF;
+      --text:#0E0E0E;--muted:#6B6B6B;--border:#E0DFDC;
+      /* Material Symbols helper */
+      --ms-size:1.1em;
+    }
     *{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth}
     body{font-family:'Geist',system-ui,sans-serif;background:var(--surface);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -39,11 +53,11 @@
       overflow:hidden;
     }
     .page-hdr::before{content:'';position:absolute;width:480px;height:480px;background:var(--red);border-radius:50%;top:-240px;right:-160px;opacity:.1;filter:blur(60px)}
-    .page-hdr::after{content:'';position:absolute;width:320px;height:320px;background:var(--yellow);border-radius:50%;bottom:-160px;left:-80px;opacity:.08;filter:blur(60px)}
+    .page-hdr::after{content:'';position:absolute;width:320px;height:320px;background:var(--blue);border-radius:50%;bottom:-160px;left:-80px;opacity:.08;filter:blur(60px)}
     .page-hdr-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
     .page-ey{font-size:.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--red);margin-bottom:8px}
     .page-h1{font-family:'Montserrat',sans-serif;font-size:clamp(2rem,5vw,3.4rem);font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:10px}
-    .page-h1 em{font-style:italic;color:var(--yellow)}
+    .page-h1 em{font-style:italic;color:var(--blue)}
     .page-sub{color:rgba(255,255,255,.6);font-size:.97rem;margin-bottom:32px;font-weight:300}
 
     /* NAVBAR (sin cambios excepto el logo que ya se modificó arriba) */
@@ -109,7 +123,8 @@
     .c-top img{max-width:84%;max-height:80%;width:auto;height:auto;object-fit:contain;transition:transform .3s}
     .s-card:hover .c-top img{transform:scale(1.05)}
     .c-gal{position:absolute;top:9px;left:9px;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);color:var(--text);padding:3px 9px;border-radius:100px;font-size:.62rem;font-weight:700}
-    .c-badge{position:absolute;top:9px;right:9px;background:var(--yellow);color:var(--dark);padding:3px 9px;border-radius:100px;font-size:.62rem;font-weight:700}
+    .c-badge{position:absolute;top:9px;right:9px;background:var(--pr-red);color:#fff;padding:3px 9px 3px 6px;border-radius:100px;font-size:.62rem;font-weight:700;display:inline-flex;align-items:center;gap:3px}
+    .c-badge .material-symbols-outlined{font-size:12px;font-variation-settings:'FILL' 1,'wght' 600}
     .c-body{padding:15px 18px 18px;flex:1;display:flex;flex-direction:column}
     .c-name{font-family:'Montserrat',sans-serif;font-weight:700;font-size:1rem;margin-bottom:3px}
     .c-cat{font-size:.76rem;color:var(--muted);margin-bottom:12px;flex:1}

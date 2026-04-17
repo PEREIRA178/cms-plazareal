@@ -1631,7 +1631,7 @@ func TiendasList(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			}
 			return c.SendFile("./internal/templates/admin/pages/tiendas.html")
 		}
-		records, err := pb.FindRecordsByFilter("tiendas", "id != ''", "nombre", 200, 0)
+		records, err := pb.FindRecordsByFilter("tiendas", "", "nombre", 200, 0)
 		var sb strings.Builder
 		if err != nil {
 			sb.WriteString(fmt.Sprintf(`<tr><td colspan="6" style="text-align:center;padding:32px;color:#B71C1C">Error: %s</td></tr>`, template.HTMLEscapeString(err.Error())))
