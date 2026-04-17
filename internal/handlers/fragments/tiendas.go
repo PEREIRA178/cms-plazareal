@@ -142,7 +142,7 @@ func renderTiendaCard(t tienda, i int) string {
 	return fmt.Sprintf(`<a href="tienda-individual.html?tienda=%s" class="s-card" role="listitem" aria-label="Ver %s" style="animation-delay:%dms">
   <div class="c-top">
     <img src="%s" alt="Logo %s" loading="lazy" onerror="this.src='https://picsum.photos/seed/%s/320/148'">
-    <span class="c-gal">%s</span>%s
+    <span class="c-gal" style="display:none">%s</span>%s
   </div>
   <div class="c-body">
     <div class="c-name">%s</div>
@@ -247,7 +247,7 @@ func renderIndexCard(t tienda, i int) string {
 	return fmt.Sprintf(`<a href="tienda-individual.html?tienda=%s" class="s-card">
   <div class="s-card-top">
     <img src="%s" alt="Logo %s" loading="lazy" onerror="this.src='https://picsum.photos/seed/%s/320/160'">
-    <span class="s-gallery">%s</span>%s
+    <span class="s-gallery" style="display:none">%s</span>%s
   </div>
   <div class="s-card-body">
     <div class="s-card-name">%s</div>
@@ -414,7 +414,7 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			logoSrc = fmt.Sprintf("https://picsum.photos/seed/%s/148/148", t.Slug)
 		}
 
-		aboutTitle := fmt.Sprintf(`<span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">auto_awesome</span>Sobre %s`, t.Nombre)
+		aboutTitle := fmt.Sprintf(`<span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">auto_awesome</span>Sobre %s`, template.HTMLEscapeString(t.Nombre))
 
 		html := fmt.Sprintf(`
 <div class="bc">
@@ -509,7 +509,7 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			template.HTMLEscapeString(photos[2]),
 			template.HTMLEscapeString(photos[3]),
 			// about
-			template.HTMLEscapeString(aboutTitle),
+			aboutTitle,
 			template.HTMLEscapeString(t.About),
 			func() string {
 				if t.About2 == "" {
