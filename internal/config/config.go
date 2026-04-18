@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"time"
 )
@@ -8,15 +9,15 @@ import (
 // Config holds all application configuration
 type Config struct {
 	// Server
-	Port               string
-	Env                string
-	CORSOrigins        string
+	Port                string
+	Env                 string
+	CORSOrigins         string
 	StaticCacheDuration time.Duration
 
 	// PocketBase
-	PBUrl    string
-	PBAdmin  string
-	PBPass   string
+	PBUrl   string
+	PBAdmin string
+	PBPass  string
 
 	// Admin credentials
 	AdminEmail    string
@@ -27,12 +28,12 @@ type Config struct {
 	JWTExpiration time.Duration
 
 	// Cloudflare R2
-	R2AccountID   string
-	R2AccessKey   string
-	R2SecretKey   string
-	R2BucketName  string
-	R2Region      string
-	R2PublicURL   string
+	R2AccountID  string
+	R2AccessKey  string
+	R2SecretKey  string
+	R2BucketName string
+	R2Region     string
+	R2PublicURL  string
 
 	// WhatsApp (Twilio)
 	TwilioAccountSID string
@@ -44,29 +45,29 @@ type Config struct {
 	OllamaModel string
 
 	// Web
-	BaseURL     string
-	SiteName    string
+	BaseURL  string
+	SiteName string
 }
 
 func Load() *Config {
 	return &Config{
 		// Server
-		Port:               getEnv("PORT", "3000"),
-		Env:                getEnv("ENV", "development"),
-		CORSOrigins:        getEnv("CORS_ORIGINS", "*"),
+		Port:                getEnv("PORT", "3000"),
+		Env:                 getEnv("ENV", "development"),
+		CORSOrigins:         getEnv("CORS_ORIGINS", ""),
 		StaticCacheDuration: 24 * time.Hour,
 
 		// PocketBase
 		PBUrl:   getEnv("PB_URL", "http://127.0.0.1:8090"),
-		PBAdmin: getEnv("PB_ADMIN_EMAIL", "admin@jcp.cl"),
+		PBAdmin: getEnv("PB_ADMIN_EMAIL", ""),
 		PBPass:  getEnv("PB_ADMIN_PASSWORD", ""),
 
-		// Admin credentials
-		AdminEmail:    getEnv("ADMIN_EMAIL", "admin@jcp-gestioninmobiliaria.cl"),
-		AdminPassword: getEnv("ADMIN_PASSWORD", "jcp2026admin!"),
+		// Admin credentials — no defaults; Validate() enforces these are set
+		AdminEmail:    getEnv("ADMIN_EMAIL", ""),
+		AdminPassword: getEnv("ADMIN_PASSWORD", ""),
 
-		// JWT
-		JWTSecret:     getEnv("JWT_SECRET", "jcp-secret-change-me-in-production"),
+		// JWT — no default secret; Validate() enforces this is set
+		JWTSecret:     getEnv("JWT_SECRET", ""),
 		JWTExpiration: 72 * time.Hour,
 
 		// Cloudflare R2
@@ -89,6 +90,20 @@ func Load() *Config {
 		// Web
 		BaseURL:  getEnv("BASE_URL", "http://localhost:3000"),
 		SiteName: "JCP Gestión Inmobiliaria",
+	}
+}
+
+// Validate fatals at startup if required environment variables are not set.
+func (c *Config) Validate() {
+	required := []struct{ key, val string }{
+		{"ADMIN_EMAIL", c.AdminEmail},
+		{"ADMIN_PASSWORD", c.AdminPassword},
+		{"JWT_SECRET", c.JWTSecret},
+	}
+	for _, r := range required {
+		if r.val == "" {
+			log.Fatalf("required environment variable %s is not set", r.key)
+		}
 	}
 }
 

@@ -1,9 +1,12 @@
 # PocketBase runtime files
+pb_data/*.db
 pb_data/*.db-shm
 pb_data/*.db-wal
+pb_data/storage/
 pb_data/logs/
 
 # Build output
+/run-app
 /jcp-gestioninmobiliaria
 /tmp/
 
@@ -14,3 +17,11 @@ pb_data/logs/
 # Environment
 .env
 .env.local
+.env.production
+
+# TLS / certificates
+*.pem
+*.key
+*.p12
+*.crt
+*.csr

@@ -1,8 +1,13 @@
 package web
 
 import (
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/base64"
 	"fmt"
 	"html/template"
+	"net/url"
+	"sort"
 	"strings"
 	"time"
 
@@ -102,11 +107,43 @@ func RSSFeed(cfg *config.Config) fiber.Handler {
 	}
 }
 
-// WhatsAppWebhook handles inbound WhatsApp messages
+// WhatsAppWebhook handles inbound WhatsApp messages with Twilio signature verification.
 func WhatsAppWebhook(cfg *config.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		if cfg.TwilioAuthToken != "" {
+			sig := c.Get("X-Twilio-Signature")
+			if sig == "" {
+				return c.Status(fiber.StatusForbidden).SendString("")
+			}
+			fullURL := cfg.BaseURL + string(c.Request().URI().RequestURI())
+			params := make(map[string]string)
+			c.Request().PostArgs().VisitAll(func(k, v []byte) {
+				params[string(k)] = string(v)
+			})
+			if !verifyTwilioSignature(cfg.TwilioAuthToken, fullURL, params, sig) {
+				return c.Status(fiber.StatusForbidden).SendString("")
+			}
+		}
 		return c.SendString("<Response></Response>")
 	}
+}
+
+func verifyTwilioSignature(authToken, reqURL string, params map[string]string, signature string) bool {
+	keys := make([]string, 0, len(params))
+	for k := range params {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	s := reqURL
+	for _, k := range keys {
+		s += k + params[k]
+	}
+
+	mac := hmac.New(sha1.New, []byte(authToken))
+	mac.Write([]byte(s))
+	expected := base64.StdEncoding.EncodeToString(mac.Sum(nil))
+	return hmac.Equal([]byte(expected), []byte(signature))
 }
 
 // NoticiaHandler renders a single news article using the full site layout template.
@@ -330,7 +367,7 @@ func PropiedadHandler(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handl
 		if whatsapp != "" {
 			msg := "Hola! Me interesa la propiedad: " + titulo
 			whatsappHTML = fmt.Sprintf(`<a href="https://wa.me/%s?text=%s" target="_blank" rel="noopener" class="btn-whatsapp">💬 WhatsApp directo</a>`,
-				onlyDigits(whatsapp), urlEscape(msg))
+				onlyDigits(whatsapp), url.QueryEscape(msg))
 		}
 
 		tmpl, err2 := template.ParseFiles("./internal/templates/web/propiedad.html")
@@ -402,7 +439,3 @@ func onlyDigits(s string) string {
 	return string(b)
 }
 
-func urlEscape(s string) string {
-	// minimal: replace spaces
-	return strings.ReplaceAll(s, " ", "%20")
-}
