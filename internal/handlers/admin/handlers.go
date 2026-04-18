@@ -36,13 +36,13 @@ func LoginSubmit(cfg *config.Config) fiber.Handler {
 		}
 
 		if email == cfg.AdminEmail && password == cfg.AdminPassword {
-			token, err := auth.GenerateToken(cfg, "admin-id", email, "superadmin", "Administrador")
-			if err != nil {
-				return c.Status(500).SendString(`<div class="toast toast-error">Error generando sesión</div>`)
-			}
 			expiry := 24 * time.Hour
 			if remember {
 				expiry = 72 * time.Hour
+			}
+			token, err := auth.GenerateToken(cfg, "admin-id", email, "superadmin", "Administrador", expiry)
+			if err != nil {
+				return c.Status(500).SendString(`<div class="toast toast-error">Error generando sesión</div>`)
 			}
 			c.Cookie(&fiber.Cookie{
 				Name:     "csl_token",
@@ -57,19 +57,23 @@ func LoginSubmit(cfg *config.Config) fiber.Handler {
 			return c.SendString("")
 		}
 
+		log.Printf("AUTH_FAILURE email=%q ip=%s ua=%q", email, c.IP(), c.Get("User-Agent"))
 		return c.Status(fiber.StatusUnauthorized).SendString(
 			`<div class="toast toast-error">Credenciales incorrectas</div>`,
 		)
 	}
 }
 
-func Logout() fiber.Handler {
+func Logout(cfg *config.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		c.Cookie(&fiber.Cookie{
-			Name:    "csl_token",
-			Value:   "",
-			Expires: time.Now().Add(-time.Hour),
-			Path:    "/",
+			Name:     "csl_token",
+			Value:    "",
+			Expires:  time.Now().Add(-time.Hour),
+			HTTPOnly: true,
+			Secure:   cfg.Env == "production",
+			SameSite: "Lax",
+			Path:     "/",
 		})
 		c.Set("HX-Redirect", "/admin/login")
 		return c.SendString("")

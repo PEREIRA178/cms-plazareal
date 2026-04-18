@@ -3,6 +3,9 @@ package main
 import (
 	"log"
 	"os"
+	"regexp"
+	"strings"
+	"time"
 
 	"jcp-gestioninmobiliaria/internal/auth"
 	"jcp-gestioninmobiliaria/internal/config"
@@ -16,14 +19,20 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/helmet"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	gows "github.com/gofiber/websocket/v2"
 	"github.com/pocketbase/pocketbase"
 )
 
+// validWSDeviceCode accepts only alphanumeric, hyphens, and underscores (1–50 chars).
+var validWSDeviceCode = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,50}$`)
+
 func main() {
 	cfg := config.Load()
+	cfg.Validate()
 
 	pb := pocketbase.New()
 	auth.RegisterPBHooks(pb)
@@ -55,6 +64,7 @@ func main() {
 		TimeFormat: "15:04:05",
 	}))
 	app.Use(recover.New())
+	app.Use(helmet.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: cfg.CORSOrigins,
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization, HX-Request, HX-Trigger",
@@ -108,6 +118,21 @@ func main() {
 	app.Get("/totem/:code", web.TotemDisplay(cfg))
 	app.Use("/ws", func(c *fiber.Ctx) error {
 		if gows.IsWebSocketUpgrade(c) {
+			path := c.Path()
+			if strings.HasPrefix(path, "/ws/device/") {
+				code := strings.TrimPrefix(path, "/ws/device/")
+				if !validWSDeviceCode.MatchString(code) {
+					return c.Status(fiber.StatusBadRequest).SendString("invalid device code")
+				}
+			} else if path == "/ws/web" {
+				token := c.Cookies("csl_token")
+				if token == "" {
+					return c.Status(fiber.StatusUnauthorized).SendString("unauthorized")
+				}
+				if _, err := auth.ValidateToken(cfg, token); err != nil {
+					return c.Status(fiber.StatusUnauthorized).SendString("unauthorized")
+				}
+			}
 			return c.Next()
 		}
 		return fiber.ErrUpgradeRequired
@@ -116,9 +141,18 @@ func main() {
 	app.Get("/ws/web", gows.New(ws.WebSocket(hub)))
 
 	// ── ADMIN ──
+	loginLimiter := limiter.New(limiter.Config{
+		Max:        5,
+		Expiration: 1 * time.Minute,
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).SendString(
+				`<div class="toast toast-error">Demasiados intentos. Espera 1 minuto.</div>`)
+		},
+	})
+
 	app.Get("/admin/login", admin.LoginPage(cfg))
-	app.Post("/admin/login", admin.LoginSubmit(cfg))
-	app.Post("/admin/logout", admin.Logout())
+	app.Post("/admin/login", loginLimiter, admin.LoginSubmit(cfg))
+	app.Post("/admin/logout", admin.Logout(cfg))
 
 	adm := app.Group("/admin", middleware.AuthRequired(cfg))
 

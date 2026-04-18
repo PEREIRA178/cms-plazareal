@@ -18,15 +18,15 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// GenerateToken creates a signed JWT for a user
-func GenerateToken(cfg *config.Config, userID, email, role, nombre string) (string, error) {
+// GenerateToken creates a signed JWT for a user with the given expiry duration.
+func GenerateToken(cfg *config.Config, userID, email, role, nombre string, expiry time.Duration) (string, error) {
 	claims := Claims{
 		UserID: userID,
 		Email:  email,
 		Role:   role,
 		Nombre: nombre,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(cfg.JWTExpiration)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expiry)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    "jcp-gestioninmobiliaria",
 		},

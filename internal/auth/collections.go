@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
@@ -267,18 +268,24 @@ func ensureCollections(app core.App) error {
 	if users != nil {
 		records, err := app.FindRecordsByFilter(users, "role = 'superadmin'", "", 1, 0)
 		if err != nil || len(records) == 0 {
-			record := core.NewRecord(users)
-			record.Set("email", "admin@jcp-gestioninmobiliaria.cl")
-			record.Set("password", "jcp2026admin!")
-			record.Set("passwordConfirm", "jcp2026admin!")
-			record.Set("nombre", "Administrador")
-			record.Set("role", "superadmin")
-			record.Set("activo", true)
-			record.Set("verified", true)
-			if err := app.Save(record); err != nil {
-				log.Printf("⚠️  Error creating superadmin: %v", err)
+			adminEmail := os.Getenv("ADMIN_EMAIL")
+			adminPass := os.Getenv("ADMIN_PASSWORD")
+			if adminEmail == "" || adminPass == "" {
+				log.Println("⚠️  Skipping superadmin seed: ADMIN_EMAIL or ADMIN_PASSWORD not set")
 			} else {
-				log.Println("  ✅ Default superadmin created")
+				record := core.NewRecord(users)
+				record.Set("email", adminEmail)
+				record.Set("password", adminPass)
+				record.Set("passwordConfirm", adminPass)
+				record.Set("nombre", "Administrador")
+				record.Set("role", "superadmin")
+				record.Set("activo", true)
+				record.Set("verified", true)
+				if err := app.Save(record); err != nil {
+					log.Printf("⚠️  Error creating superadmin: %v", err)
+				} else {
+					log.Println("  ✅ Default superadmin created")
+				}
 			}
 		}
 	}

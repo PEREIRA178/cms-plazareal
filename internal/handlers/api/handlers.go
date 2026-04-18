@@ -1,7 +1,7 @@
 package api
 
 import (
-	"strings"
+	"regexp"
 
 	"jcp-gestioninmobiliaria/internal/config"
 
@@ -9,20 +9,19 @@ import (
 	"github.com/pocketbase/pocketbase"
 )
 
-// sanitize removes characters that could cause PocketBase filter injection.
-func sanitize(s string) string {
-	s = strings.ReplaceAll(s, "'", "")
-	s = strings.ReplaceAll(s, "\\", "")
-	return s
-}
+// validDeviceCode accepts only alphanumeric, hyphens, and underscores (1–50 chars).
+var validDeviceCode = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,50}$`)
+
+// validPBID accepts PocketBase record IDs (alphanumeric, 8–25 chars).
+var validPBID = regexp.MustCompile(`^[a-zA-Z0-9]{8,25}$`)
 
 // DevicePlaylist returns the playlist and items assigned to a device (by URL code).
 // GET /api/devices/:code/playlist
 func DevicePlaylist(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		code := sanitize(c.Params("code"))
-		if code == "" {
-			return c.Status(400).JSON(fiber.Map{"error": "missing device code"})
+		code := c.Params("code")
+		if !validDeviceCode.MatchString(code) {
+			return c.Status(400).JSON(fiber.Map{"error": "invalid device code"})
 		}
 
 		devices, err := pb.FindRecordsByFilter("devices", "code = '"+code+"'", "", 1, 0)
@@ -44,6 +43,9 @@ func DevicePlaylist(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler
 
 		playlistID := device.GetString("playlist_id")
 		if playlistID == "" {
+			return c.JSON(resp)
+		}
+		if !validPBID.MatchString(playlistID) {
 			return c.JSON(resp)
 		}
 

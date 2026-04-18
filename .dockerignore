@@ -1,0 +1,11 @@
+.git
+.gitignore
+.dockerignore
+*.md
+.env
+.env.*
+pb_data/
+*.test
+*.out
+/tmp/
+.github/
