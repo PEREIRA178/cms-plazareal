@@ -3,7 +3,8 @@ package fragments
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
+	"html"
+	"net/url"
 	"strings"
 
 	"jcp-gestioninmobiliaria/internal/config"
@@ -150,16 +151,16 @@ func renderTiendaCard(t tienda, i int) string {
     <div class="c-foot"><span class="c-tag">%s</span><span class="c-arr">→</span></div>
   </div>
 </a>`,
-		template.HTMLEscapeString(t.Slug),
-		template.HTMLEscapeString(t.Nombre),
+		html.EscapeString(t.Slug),
+		html.EscapeString(t.Nombre),
 		delay,
-		template.HTMLEscapeString(logoSrc),
-		template.HTMLEscapeString(t.Nombre),
-		template.HTMLEscapeString(t.Slug),
+		html.EscapeString(logoSrc),
+		html.EscapeString(t.Nombre),
+		html.EscapeString(t.Slug),
 		galBadge, featured,
-		template.HTMLEscapeString(t.Nombre),
-		template.HTMLEscapeString(tagsStr),
-		template.HTMLEscapeString(catDisp),
+		html.EscapeString(t.Nombre),
+		html.EscapeString(tagsStr),
+		html.EscapeString(catDisp),
 	)
 }
 
@@ -217,9 +218,9 @@ func TiendasPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
     ⬇ Cargar más
   </button>
 </div>`,
-				template.URLQueryEscaper(catFilter),
-				template.URLQueryEscaper(galFilter),
-				template.URLQueryEscaper(q),
+				url.QueryEscape(catFilter),
+				url.QueryEscape(galFilter),
+				url.QueryEscape(q),
 				nextPage,
 			))
 		}
@@ -255,13 +256,13 @@ func renderIndexCard(t tienda, i int) string {
     <div class="s-card-foot"><span class="s-card-tag">%s</span><span class="s-card-arr">→</span></div>
   </div>
 </a>`,
-		template.HTMLEscapeString(t.Slug),
-		template.HTMLEscapeString(logoSrc),
-		template.HTMLEscapeString(t.Nombre),
-		template.HTMLEscapeString(t.Slug),
+		html.EscapeString(t.Slug),
+		html.EscapeString(logoSrc),
+		html.EscapeString(t.Nombre),
+		html.EscapeString(t.Slug),
 		galBadge, featured,
-		template.HTMLEscapeString(t.Nombre),
-		template.HTMLEscapeString(t.Desc),
+		html.EscapeString(t.Nombre),
+		html.EscapeString(t.Desc),
 		tag,
 	)
 }
@@ -301,7 +302,7 @@ func TiendasMarquee(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler
 		writeRun := func() {
 			for _, t := range stores {
 				sb.WriteString(`<span class="mq-item">`)
-				sb.WriteString(template.HTMLEscapeString(t.Nombre))
+				sb.WriteString(html.EscapeString(t.Nombre))
 				sb.WriteString(`<span class="mq-dot"></span></span>`)
 			}
 		}
@@ -335,12 +336,12 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			photos = append(photos, fmt.Sprintf("https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80"))
 		}
 		photosJSON, _ := json.Marshal(photos)
-		photosAttr := template.HTMLEscapeString(string(photosJSON))
+		photosAttr := html.EscapeString(string(photosJSON))
 
 		// Build tags HTML
 		var tagsSB strings.Builder
 		for _, tag := range t.Tags {
-			tagsSB.WriteString(fmt.Sprintf(`<span class="s-tag">%s</span>`, template.HTMLEscapeString(tag)))
+			tagsSB.WriteString(fmt.Sprintf(`<span class="s-tag">%s</span>`, html.EscapeString(tag)))
 		}
 		tagsSB.WriteString(`<span class="s-open"><span class="live-dot"></span>Abierto ahora</span>`)
 
@@ -370,12 +371,12 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
   <div><div class="sim-name">%s</div><div class="sim-sub">%s</div></div>
   <span class="sim-arr">→</span>
 </a>`,
-					template.HTMLEscapeString(sim.Slug),
-					template.HTMLEscapeString(simLogo),
-					template.HTMLEscapeString(sim.Nombre),
-					template.HTMLEscapeString(sim.Slug),
-					template.HTMLEscapeString(sim.Nombre),
-					template.HTMLEscapeString(simTags),
+					html.EscapeString(sim.Slug),
+					html.EscapeString(simLogo),
+					html.EscapeString(sim.Nombre),
+					html.EscapeString(sim.Slug),
+					html.EscapeString(sim.Nombre),
+					html.EscapeString(simTags),
 				))
 			}
 		}
@@ -397,8 +398,8 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 				hrs = "Consultar"
 			}
 			schSB.WriteString(fmt.Sprintf(`<div class="sch-row"><span class="sch-day">%s</span><span class="sch-hrs">%s</span></div>`,
-				template.HTMLEscapeString(d.name),
-				template.HTMLEscapeString(hrs),
+				html.EscapeString(d.name),
+				html.EscapeString(hrs),
 			))
 		}
 
@@ -414,7 +415,7 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			logoSrc = fmt.Sprintf("https://picsum.photos/seed/%s/148/148", t.Slug)
 		}
 
-		aboutTitle := fmt.Sprintf(`<span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">auto_awesome</span>Sobre %s`, template.HTMLEscapeString(t.Nombre))
+		aboutTitle := fmt.Sprintf(`<span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">auto_awesome</span>Sobre %s`, html.EscapeString(t.Nombre))
 
 		html := fmt.Sprintf(`
 <div class="bc">
@@ -492,40 +493,40 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
   </div>
 </div>`,
 			// bc
-			template.HTMLEscapeString(t.Nombre),
+			html.EscapeString(t.Nombre),
 			// hero
-			template.HTMLEscapeString(logoSrc),
-			template.HTMLEscapeString(t.Nombre),
-			template.HTMLEscapeString(t.Slug),
+			html.EscapeString(logoSrc),
+			html.EscapeString(t.Nombre),
+			html.EscapeString(t.Slug),
 			catEmoji(t.Cat),
-			template.HTMLEscapeString(catLabel(t.Cat)),
-			template.HTMLEscapeString(t.Nombre),
-			template.HTMLEscapeString(t.Desc),
+			html.EscapeString(catLabel(t.Cat)),
+			html.EscapeString(t.Nombre),
+			html.EscapeString(t.Desc),
 			tagsSB.String(),
 			// gallery
 			photosAttr,
-			template.HTMLEscapeString(photos[0]),
-			template.HTMLEscapeString(photos[1]),
-			template.HTMLEscapeString(photos[2]),
-			template.HTMLEscapeString(photos[3]),
+			html.EscapeString(photos[0]),
+			html.EscapeString(photos[1]),
+			html.EscapeString(photos[2]),
+			html.EscapeString(photos[3]),
 			// about
 			aboutTitle,
-			template.HTMLEscapeString(t.About),
+			html.EscapeString(t.About),
 			func() string {
 				if t.About2 == "" {
 					return ""
 				}
-				return fmt.Sprintf(`<p style="font-size:.93rem;line-height:1.75;color:var(--muted);font-weight:300;margin-top:12px">%s</p>`, template.HTMLEscapeString(t.About2))
+				return fmt.Sprintf(`<p style="font-size:.93rem;line-height:1.75;color:var(--muted);font-weight:300;margin-top:12px">%s</p>`, html.EscapeString(t.About2))
 			}(),
 			// schedule
 			schSB.String(),
 			// location badge
-			template.HTMLEscapeString(localInfo),
+			html.EscapeString(localInfo),
 			// rating card
-			template.HTMLEscapeString(t.Rating),
-			template.HTMLEscapeString(localInfo),
-			template.HTMLEscapeString(t.HorarioLV),
-			template.HTMLEscapeString(t.Pay),
+			html.EscapeString(t.Rating),
+			html.EscapeString(localInfo),
+			html.EscapeString(t.HorarioLV),
+			html.EscapeString(t.Pay),
 			// action buttons
 			telLink,
 			// similar

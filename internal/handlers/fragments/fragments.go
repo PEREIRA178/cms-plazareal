@@ -2,7 +2,7 @@ package fragments
 
 import (
 	"fmt"
-	"html/template"
+	"html"
 	"net/url"
 	"strings"
 
@@ -123,7 +123,7 @@ func Eventos(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			footerRight := ""
 			if ev.PdfURL != "" {
 				footerRight = fmt.Sprintf(`<a href="%s" target="_blank" rel="noopener" style="font-size:12px;font-weight:500;color:var(--md-primary);text-decoration:none">Ver comunicado →</a>`,
-					template.HTMLEscapeString(ev.PdfURL))
+					html.EscapeString(ev.PdfURL))
 			}
 			sb.WriteString(fmt.Sprintf(`
     <div class="evento-card %s reveal visible%s">
@@ -139,9 +139,9 @@ func Eventos(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
       </div>
     </div>`,
 				ev.CSSClass, delayClass(i),
-				template.HTMLEscapeString(ev.Category),
-				template.HTMLEscapeString(ev.Title),
-				template.HTMLEscapeString(ev.Desc),
+				html.EscapeString(ev.Category),
+				html.EscapeString(ev.Title),
+				html.EscapeString(ev.Desc),
 				ev.Date, footerRight,
 			))
 		}
@@ -179,7 +179,7 @@ func Noticias(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			thumbInner := `<div style="width:100%;height:100%;background:linear-gradient(135deg,#d60d5222,#00a0e322);display:flex;align-items:center;justify-content:center;font-size:2rem">📰</div>`
 			if n.ImageURL != "" {
 				thumbInner = fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy" style="width:100%%;height:100%%;object-fit:cover;display:block">`,
-					template.HTMLEscapeString(n.ImageURL), template.HTMLEscapeString(n.Title))
+					html.EscapeString(n.ImageURL), html.EscapeString(n.Title))
 			}
 			leerHref := "noticias.html"
 			if n.ID != "" {
@@ -197,13 +197,13 @@ func Noticias(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
   </div>
   <div class="n-foot"><span class="n-date">%s</span><span class="n-arr">Leer más →</span></div>
 </a>`,
-				template.HTMLEscapeString(leerHref),
+				html.EscapeString(leerHref),
 				extraClass,
 				thumbInner,
-				template.HTMLEscapeString(n.Category),
-				template.HTMLEscapeString(n.Title),
-				template.HTMLEscapeString(n.Excerpt),
-				template.HTMLEscapeString(n.Date),
+				html.EscapeString(n.Category),
+				html.EscapeString(n.Title),
+				html.EscapeString(n.Excerpt),
+				html.EscapeString(n.Date),
 			))
 		}
 		c.Set("Content-Type", "text/html; charset=utf-8")
@@ -334,7 +334,7 @@ func Comunicados(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			verMasBtn := ""
 			if b.PdfURL != "" {
 				verMasBtn = fmt.Sprintf(`<a href="%s" class="comunicado-btn" target="_blank" rel="noopener">Ver comunicado →</a>`,
-					template.HTMLEscapeString(b.PdfURL))
+					html.EscapeString(b.PdfURL))
 			}
 			sb.WriteString(fmt.Sprintf(`
       <div class="comunicado-card %s reveal visible%s">
@@ -351,8 +351,8 @@ func Comunicados(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
       </div>`,
 				accentClass, delayClass(i%4),
 				chip,
-				template.HTMLEscapeString(b.Title),
-				template.HTMLEscapeString(b.Desc),
+				html.EscapeString(b.Title),
+				html.EscapeString(b.Desc),
 				b.Date,
 				verMasBtn,
 			))
@@ -500,7 +500,7 @@ func NoticiasPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 				thumbInner := `<div style="width:100%;height:100%;background:linear-gradient(135deg,#d60d5222,#00a0e322);display:flex;align-items:center;justify-content:center;font-size:2.2rem">📰</div>`
 				if n.ImageURL != "" {
 					thumbInner = fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy" style="width:100%%;height:100%%;object-fit:cover;display:block">`,
-						template.HTMLEscapeString(n.ImageURL), template.HTMLEscapeString(n.Title))
+						html.EscapeString(n.ImageURL), html.EscapeString(n.Title))
 				}
 				leerHref := "#"
 				if n.ID != "" {
@@ -514,12 +514,12 @@ func NoticiasPage(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
   </div>
   <div class="n-foot"><span class="n-date">%s</span><span class="n-arr">Leer más →</span></div>
 </a>`,
-					template.HTMLEscapeString(leerHref),
+					html.EscapeString(leerHref),
 					thumbInner,
-					template.HTMLEscapeString(n.Category),
-					template.HTMLEscapeString(n.Title),
-					template.HTMLEscapeString(n.Excerpt),
-					template.HTMLEscapeString(n.Date),
+					html.EscapeString(n.Category),
+					html.EscapeString(n.Title),
+					html.EscapeString(n.Excerpt),
+					html.EscapeString(n.Date),
 				))
 			}
 		}

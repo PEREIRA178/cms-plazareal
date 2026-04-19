@@ -2,7 +2,7 @@ package fragments
 
 import (
 	"fmt"
-	"html/template"
+	"html"
 	"net/url"
 	"strings"
 
@@ -325,8 +325,8 @@ func renderPropCard(p propiedad, i int) string {
 	imgHTML := ""
 	if p.CoverImage != "" {
 		imgHTML = fmt.Sprintf(`<img src="%s" alt="%s" loading="lazy"/>`,
-			template.HTMLEscapeString(p.CoverImage),
-			template.HTMLEscapeString(p.Titulo))
+			html.EscapeString(p.CoverImage),
+			html.EscapeString(p.Titulo))
 	} else {
 		imgHTML = `<div class="prop-img-placeholder">
       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -369,10 +369,10 @@ func renderPropCard(p propiedad, i int) string {
 	}
 	feats += `</div>`
 
-	location := template.HTMLEscapeString(strings.TrimSpace(strings.Trim(
+	location := html.EscapeString(strings.TrimSpace(strings.Trim(
 		fmt.Sprintf("%s · %s", p.Comuna, p.Region), " ·")))
 	if p.Comuna == "" && p.Region == "" {
-		location = template.HTMLEscapeString(p.Direccion)
+		location = html.EscapeString(p.Direccion)
 	}
 
 	delay := ""
@@ -399,19 +399,19 @@ func renderPropCard(p propiedad, i int) string {
   </a>
 </article>`,
 		delay,
-		template.HTMLEscapeString(p.ID),
-		template.HTMLEscapeString(func() string {
+		html.EscapeString(p.ID),
+		html.EscapeString(func() string {
 			if p.Slug != "" {
 				return p.Slug
 			}
 			return p.ID
 		}()),
-		template.HTMLEscapeString(p.Titulo),
+		html.EscapeString(p.Titulo),
 		imgHTML,
 		badges, opBadge,
 		priceLabel(p),
 		feats,
-		template.HTMLEscapeString(p.Titulo),
+		html.EscapeString(p.Titulo),
 		location,
 	)
 }
