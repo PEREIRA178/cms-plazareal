@@ -125,10 +125,6 @@ func renderTiendaCard(t tienda, i int) string {
 	if logoSrc == "" {
 		logoSrc = fmt.Sprintf("https://picsum.photos/seed/%s/320/148", t.Slug)
 	}
-	galBadge := "Placa Comercial"
-	if t.Gal == "sur" {
-		galBadge = "Torre Flamenco"
-	}
 	featured := ""
 	if t.Destacada {
 		featured = `<span class="c-badge"><span class="material-symbols-outlined">grade</span>Destacado</span>`
@@ -142,7 +138,7 @@ func renderTiendaCard(t tienda, i int) string {
 	return fmt.Sprintf(`<a href="tienda-individual.html?tienda=%s" class="s-card" role="listitem" aria-label="Ver %s" style="animation-delay:%dms">
   <div class="c-top">
     <img src="%s" alt="Logo %s" loading="lazy" onerror="this.src='https://picsum.photos/seed/%s/320/148'">
-    <span class="c-gal">%s</span>%s
+    %s
   </div>
   <div class="c-body">
     <div class="c-name">%s</div>
@@ -156,7 +152,7 @@ func renderTiendaCard(t tienda, i int) string {
 		template.HTMLEscapeString(logoSrc),
 		template.HTMLEscapeString(t.Nombre),
 		template.HTMLEscapeString(t.Slug),
-		galBadge, featured,
+		featured,
 		template.HTMLEscapeString(t.Nombre),
 		template.HTMLEscapeString(tagsStr),
 		template.HTMLEscapeString(catDisp),
@@ -414,7 +410,7 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			logoSrc = fmt.Sprintf("https://picsum.photos/seed/%s/148/148", t.Slug)
 		}
 
-		aboutTitle := fmt.Sprintf(`<span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">auto_awesome</span>Sobre %s`, t.Nombre)
+		aboutTitle := fmt.Sprintf(`<span class="material-symbols-outlined" style="vertical-align:middle;font-size:1.1em;margin-right:6px">auto_awesome</span>Sobre %s`, template.HTMLEscapeString(t.Nombre))
 
 		html := fmt.Sprintf(`
 <div class="bc">
@@ -509,7 +505,7 @@ func TiendaDetail(cfg *config.Config, pb *pocketbase.PocketBase) fiber.Handler {
 			template.HTMLEscapeString(photos[2]),
 			template.HTMLEscapeString(photos[3]),
 			// about
-			template.HTMLEscapeString(aboutTitle),
+			aboutTitle,
 			template.HTMLEscapeString(t.About),
 			func() string {
 				if t.About2 == "" {
